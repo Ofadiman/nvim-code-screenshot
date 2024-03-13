@@ -1,0 +1,22 @@
+{
+  "name": "nvim-code-screenshot",
+  "version": "1.0.0",
+  "description": "Node.js bindings for neovim plugin code screenshot.",
+  "scripts": {
+    "build": "ts-node scripts/build.ts",
+    "format": "prettier -w .",
+    "prod": "node bin/main.cjs"
+  },
+  "author": {
+    "name": "Szymon Jaworski",
+    "url": "https://github.com/Ofadiman"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.11.27",
+    "esbuild": "0.20.1",
+    "prettier": "^3.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.2"
+  }
+}

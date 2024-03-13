@@ -1,0 +1,6 @@
+# Files
+bin/main.cjs
+package-lock.json
+
+# Directories
+tmp/
