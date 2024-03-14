@@ -1,9 +1,9 @@
 import { build } from 'esbuild'
 
 build({
-  entryPoints: ['src/main.ts'],
+  entryPoints: ['src/screenshot.ts', 'src/install.ts'],
   bundle: true,
-  outfile: 'bin/main.cjs',
+  outdir: 'bin',
   platform: 'node',
 })
   .then(() => {

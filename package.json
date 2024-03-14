@@ -4,8 +4,12 @@
   "description": "Node.js bindings for neovim plugin code screenshot.",
   "scripts": {
     "build": "ts-node scripts/build.ts",
+    "clean": "rm -rf $HOME/.cache/puppeteer > /dev/null 2>&1",
+    "dev:install": "ts-node src/install.ts",
+    "dev:screenshot": "ts-node src/screenshot.ts",
     "format": "prettier -w .",
-    "prod": "node bin/main.cjs"
+    "prod:install": "node bin/install.cjs",
+    "prod:screenshot": "node bin/screenshot.cjs"
   },
   "author": {
     "name": "Szymon Jaworski",
@@ -18,5 +22,8 @@
     "prettier": "^3.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.2"
+  },
+  "dependencies": {
+    "@puppeteer/browsers": "^2.1.0"
   }
 }
