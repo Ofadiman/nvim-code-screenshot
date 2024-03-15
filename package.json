@@ -6,7 +6,7 @@
     "build": "ts-node scripts/build.ts",
     "clean": "rm -rf $HOME/.cache/puppeteer > /dev/null 2>&1",
     "dev:install": "ts-node src/install.ts",
-    "dev:screenshot": "ts-node src/screenshot.ts",
+    "dev:screenshot": "npm run build && node bin/screenshot.js",
     "format": "prettier -w .",
     "prod:install": "node bin/install.cjs",
     "prod:screenshot": "node bin/screenshot.cjs"
@@ -25,6 +25,8 @@
   },
   "dependencies": {
     "@puppeteer/browsers": "^2.1.0",
-    "consola": "^3.2.3"
+    "consola": "^3.2.3",
+    "puppeteer": "^22.5.0",
+    "shiki": "^1.2.0"
   }
 }
