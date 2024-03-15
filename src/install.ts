@@ -1,6 +1,7 @@
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { Browser, getInstalledBrowsers, install } from '@puppeteer/browsers'
+import { consola } from 'consola'
 
 void (async () => {
   const defaultPuppeteerCacheDir = join(homedir(), '.cache', 'puppeteer')
@@ -10,7 +11,7 @@ void (async () => {
 
   const hasZeroInstalledBrowsers = installedBrowsers.length === 0
   if (hasZeroInstalledBrowsers) {
-    console.info(`Installing browser for puppeteer.`)
+    consola.start(`Installing required browser.`)
 
     const installedBrowser = await install({
       cacheDir: defaultPuppeteerCacheDir,
@@ -20,10 +21,14 @@ void (async () => {
       unpack: true,
     })
 
-    console.info(`The following browser was installed:`)
-    console.info(installedBrowser)
-  } else {
-    console.info(`The following browsers are already installed:`)
-    console.info(installedBrowsers)
+    consola.success(`The following browser has been installed:`)
+    consola.info(`${installedBrowser.browser}@${installedBrowser.buildId}`)
+
+    return
   }
+
+  consola.info(`The following browsers are already installed:`)
+  installedBrowsers.forEach((installedBrowser) => {
+    consola.info(`${installedBrowser.browser}@${installedBrowser.buildId}`)
+  })
 })()

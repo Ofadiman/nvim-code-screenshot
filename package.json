@@ -24,6 +24,7 @@
     "typescript": "^5.4.2"
   },
   "dependencies": {
-    "@puppeteer/browsers": "^2.1.0"
+    "@puppeteer/browsers": "^2.1.0",
+    "consola": "^3.2.3"
   }
 }
