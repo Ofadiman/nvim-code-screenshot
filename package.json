@@ -2,11 +2,12 @@
   "name": "nvim-code-screenshot",
   "version": "1.0.0",
   "description": "Node.js bindings for neovim plugin code screenshot.",
+  "type": "module",
   "scripts": {
-    "build": "ts-node scripts/build.ts",
+    "build": "node --loader ts-node/esm --no-warnings scripts/build.ts",
     "clean": "rm -rf $HOME/.cache/puppeteer > /dev/null 2>&1",
-    "dev:install": "ts-node src/install.ts",
-    "dev:screenshot": "npm run build && node bin/screenshot.js",
+    "dev:install": "node --loader ts-node/esm --no-warnings src/install.ts",
+    "dev:screenshot": "node --loader ts-node/esm --no-warnings src/screenshot.ts",
     "format": "prettier -w .",
     "prod:install": "node bin/install.cjs",
     "prod:screenshot": "node bin/screenshot.cjs"

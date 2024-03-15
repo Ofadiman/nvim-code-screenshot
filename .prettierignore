@@ -3,4 +3,5 @@ bin/main.cjs
 package-lock.json
 
 # Directories
+bin/
 tmp/
