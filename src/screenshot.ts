@@ -24,6 +24,8 @@ const template = (args: { code: string; padding: number }) => `<!doctype html>
 
 // TODO: Add feedback saying, that the screenshot was made or that something went wrong.
 void (async () => {
+  // TODO: It might be possible to load only 1 language and theme to improve performance. I have to validate if all languages and themes still can be used in that case.
+  // NOTE: It seems like all languages are bundled by default: https://shiki.style/guide/install#fine-grained-bundle
   const highlighter = await getHighlighter({
     themes: Object.keys(bundledThemes),
     langs: Object.keys(bundledLanguages),
