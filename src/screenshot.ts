@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import puppeteer from 'puppeteer'
 import { bundledLanguages, bundledThemes, getHighlighter } from 'shiki'
 
@@ -24,6 +25,17 @@ const template = (args: { code: string; padding: number }) => `<!doctype html>
 
 // TODO: Add feedback saying, that the screenshot was made or that something went wrong.
 void (async () => {
+  const tempFilePath = process.argv[2]
+  if (tempFilePath === undefined) {
+    throw new Error(`Path to temporary file with screenshot details not passed `)
+  }
+
+  // TODO: Handle missing file error.
+  const json = readFileSync(tempFilePath, { encoding: 'utf8' })
+  // TODO: Handle invalid json error.
+  // TODO: Add zod validation.
+  const parsed = JSON.parse(json)
+
   // TODO: It might be possible to load only 1 language and theme to improve performance. I have to validate if all languages and themes still can be used in that case.
   // NOTE: It seems like all languages are bundled by default: https://shiki.style/guide/install#fine-grained-bundle
   const highlighter = await getHighlighter({
@@ -32,18 +44,12 @@ void (async () => {
   })
 
   // TODO: Pass real code from nvim here.
-  const htmlCode = highlighter.codeToHtml(
-    `const highlighter = await getHighlighter({
-  themes: Object.keys(bundledThemes),
-  langs: Object.keys(bundledLanguages),
-});`,
-    {
-      // TODO: Figure out correct language mapping for current file.
-      lang: 'javascript',
-      // TODO: Allow users to configure theme.
-      theme: 'poimandres',
-    },
-  )
+  const htmlCode = highlighter.codeToHtml(parsed.code, {
+    // TODO: Figure out correct language mapping for current file.
+    lang: 'javascript',
+    // TODO: Allow users to configure theme.
+    theme: 'poimandres',
+  })
 
   const browser = await puppeteer.launch()
   const page = await browser.newPage()

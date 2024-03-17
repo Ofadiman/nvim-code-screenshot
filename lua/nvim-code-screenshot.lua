@@ -56,11 +56,27 @@ vim.api.nvim_create_user_command("CodeScreenshotScreenshot", function()
 
   vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", true)
 
-  print("Selected Text:")
-  print(vim.inspect(code))
+  local args = vim.tbl_deep_extend("error", M.options, { code = code, filepath = vim.fn.expand("%") })
+  local directory = debug.getinfo(1, "S").source:sub(2):match("(.*[/\\])")
+  local script = directory .. "../bin/screenshot.cjs"
+  local json = vim.fn.json_encode(args)
 
-  print("File path:")
-  print(vim.fn.expand("%"))
+  local tempFile = os.tmpname() .. ".json"
+  local file = io.open(tempFile, "w")
+  if file then
+    file:write(json)
+    file:close()
+  else
+    error("Failed to open file for writing: " .. tempFile)
+  end
+
+  local handle = io.popen("node " .. script .. " " .. tempFile)
+  if handle ~= nil then
+    local result = handle:read("*a")
+    handle:close()
+
+    print(result)
+  end
 end, {})
 
 M.setup = function(options)
