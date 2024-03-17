@@ -48231,12 +48231,12 @@ void (async () => {
       unpack: true
     });
     consola.success(`The following browser has been installed:`);
-    consola.info(`${installedBrowser.browser}@${installedBrowser.buildId}`);
+    consola.info(`- ${installedBrowser.browser}@${installedBrowser.buildId}`);
     return;
   }
   consola.info(`The following browsers are already installed:`);
   installedBrowsers.forEach((installedBrowser) => {
-    consola.info(`${installedBrowser.browser}@${installedBrowser.buildId}`);
+    consola.info(`- ${installedBrowser.browser}@${installedBrowser.buildId}`);
   });
 })();
 /*! Bundled license information:
