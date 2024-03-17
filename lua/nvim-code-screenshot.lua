@@ -1,4 +1,23 @@
-local M = {}
+local M = {
+  options = {
+    padding = 10,
+    persist = {
+      enable = false,
+      path = "~/",
+    },
+    clipboard = {
+      enable = true,
+      -- TODO: I am not sure if this is the best way to copy image to clipboard.
+      program = "xclip",
+    },
+    -- Available themes: https://shiki.style/themes
+    theme = "material",
+    extension = "webp",
+    quality = 3,
+    -- Available language aliases: https://shiki.style/languages
+    languages = {},
+  },
+}
 
 vim.api.nvim_create_user_command("CodeScreenshotSetup", function()
   local plugin_dir = debug.getinfo(1, "S").source:sub(2):match("(.*[/\\])")
@@ -44,6 +63,10 @@ vim.api.nvim_create_user_command("CodeScreenshotScreenshot", function()
   print(vim.fn.expand("%"))
 end, {})
 
-M.setup = function() end
+M.setup = function(options)
+  local merged_options = vim.tbl_deep_extend("force", M.options, options)
+  M.options = merged_options
+  print(vim.inspect(M.options))
+end
 
 return M
