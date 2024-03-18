@@ -25,17 +25,6 @@ const template = (args: { code: string; padding: number }) => `<!doctype html>
   </body>
 </html>`
 
-type Json = string | number | boolean | null | Array<Json> | { [key: string]: Json }
-
-const safeJsonParse = (maybeJson: string): Json | null => {
-  try {
-    const parsed = JSON.parse(maybeJson)
-    return parsed
-  } catch {
-    return null
-  }
-}
-
 const optionsSchema = z.object({
   code: z.string(),
   filepath: z.string(),
@@ -48,6 +37,7 @@ const optionsSchema = z.object({
     enable: z.boolean(),
     program: z.string(),
   }),
+  // TODO: Validate if passed theme is supported by `shiki` library.
   theme: z.string(),
   extension: z.enum(['webp', 'jpeg', 'png']),
   quality: z.number().int(),
@@ -58,19 +48,26 @@ const optionsSchema = z.object({
 void (async () => {
   const tempFilePath = process.argv[2]
   if (tempFilePath === undefined) {
-    throw new Error(`Path to temporary file with screenshot details not passed.`)
+    consola.error(`Path to temporary file with script options was not passed.`)
+    return
   }
 
   let optionsAsString: string
   try {
     optionsAsString = readFileSync(tempFilePath, { encoding: 'utf8' })
-  } catch {
-    throw new Error(`Failed to read ${tempFilePath} file.`)
+  } catch (error) {
+    consola.error(`Failed to read ${tempFilePath} file.`)
+    consola.error(error)
+    return
   }
 
-  const optionsAsJson = safeJsonParse(optionsAsString)
-  if (optionsAsJson === null) {
-    throw new Error(`Invalid JSON in ${tempFilePath} file.`)
+  let optionsAsJson: string
+  try {
+    optionsAsJson = JSON.parse(optionsAsString)
+  } catch (error) {
+    consola.error(`Invalid JSON in ${tempFilePath} file.`)
+    consola.error(error)
+    return
   }
 
   const parsedOptions = optionsSchema.safeParse(optionsAsJson)

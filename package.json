@@ -9,6 +9,7 @@
     "debug": "node --loader ts-node/esm --no-warnings tmp/debug.ts",
     "format": "prettier -w .",
     "screenshot": "node bin/screenshot.cjs",
+    "types": "tsc --noEmit",
     "setup": "node bin/setup.cjs",
     "watch": "nodemon"
   },
