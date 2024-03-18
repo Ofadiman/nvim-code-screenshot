@@ -23,6 +23,17 @@ const template = (args: { code: string; padding: number }) => `<!doctype html>
   </body>
 </html>`
 
+type Json = string | number | boolean | null | Array<Json> | { [key: string]: Json }
+
+const safeJsonParse = (maybeJson: string): Json | null => {
+  try {
+    const parsed = JSON.parse(maybeJson)
+    return parsed
+  } catch {
+    return null
+  }
+}
+
 // TODO: Add feedback saying, that the screenshot was made or that something went wrong.
 void (async () => {
   const tempFilePath = process.argv[2]
@@ -32,9 +43,12 @@ void (async () => {
 
   // TODO: Handle missing file error.
   const json = readFileSync(tempFilePath, { encoding: 'utf8' })
-  // TODO: Handle invalid json error.
+
   // TODO: Add zod validation.
-  const parsed = JSON.parse(json)
+  const parsed = safeJsonParse(json)
+  if (parsed === null) {
+    throw new Error(`Invalid JSON in ${tempFilePath} file`)
+  }
 
   // TODO: It might be possible to load only 1 language and theme to improve performance. I have to validate if all languages and themes still can be used in that case.
   // NOTE: It seems like all languages are bundled by default: https://shiki.style/guide/install#fine-grained-bundle
@@ -43,7 +57,6 @@ void (async () => {
     langs: Object.keys(bundledLanguages),
   })
 
-  // TODO: Pass real code from nvim here.
   const htmlCode = highlighter.codeToHtml(parsed.code, {
     // TODO: Figure out correct language mapping for current file.
     lang: 'javascript',

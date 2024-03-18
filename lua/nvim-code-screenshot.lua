@@ -8,6 +8,7 @@ local M = {
     clipboard = {
       enable = true,
       -- TODO: I am not sure if this is the best way to copy image to clipboard.
+      -- ERROR: https://askubuntu.com/a/759660
       program = "xclip",
     },
     -- Available themes: https://shiki.style/themes
