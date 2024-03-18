@@ -38,16 +38,20 @@ const safeJsonParse = (maybeJson: string): Json | null => {
 void (async () => {
   const tempFilePath = process.argv[2]
   if (tempFilePath === undefined) {
-    throw new Error(`Path to temporary file with screenshot details not passed `)
+    throw new Error(`Path to temporary file with screenshot details not passed.`)
   }
 
-  // TODO: Handle missing file error.
-  const json = readFileSync(tempFilePath, { encoding: 'utf8' })
+  let json: string
+  try {
+    json = readFileSync(tempFilePath, { encoding: 'utf8' })
+  } catch {
+    throw new Error(`Failed to read ${tempFilePath} file.`)
+  }
 
   // TODO: Add zod validation.
   const parsed = safeJsonParse(json)
   if (parsed === null) {
-    throw new Error(`Invalid JSON in ${tempFilePath} file`)
+    throw new Error(`Invalid JSON in ${tempFilePath} file.`)
   }
 
   // TODO: It might be possible to load only 1 language and theme to improve performance. I have to validate if all languages and themes still can be used in that case.
