@@ -16,7 +16,7 @@ local M = {
     extension = "webp",
     quality = 3,
     -- Available language aliases: https://shiki.style/languages
-    languages = {},
+    languages = nil,
   },
 }
 
@@ -71,11 +71,11 @@ vim.api.nvim_create_user_command("CodeScreenshotScreenshot", function()
     error("Failed to open file for writing: " .. tempFile)
   end
 
-  local handle = io.popen("node " .. script .. " " .. tempFile)
+  -- NOTE: If I do not redirect stderr to stdout then the logs from stderr (e.g. `console.error`) are appended at the end of the current buffer.
+  local handle = io.popen("node " .. script .. " " .. tempFile .. " 2>&1")
   if handle ~= nil then
     local result = handle:read("*a")
     handle:close()
-
     print(result)
   end
 end, {})

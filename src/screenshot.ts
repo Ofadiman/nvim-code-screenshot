@@ -1,6 +1,8 @@
+import consola from 'consola'
 import { readFileSync } from 'node:fs'
 import puppeteer from 'puppeteer'
 import { bundledLanguages, bundledThemes, getHighlighter } from 'shiki'
+import { z } from 'zod'
 
 const template = (args: { code: string; padding: number }) => `<!doctype html>
 <html>
@@ -34,6 +36,24 @@ const safeJsonParse = (maybeJson: string): Json | null => {
   }
 }
 
+const optionsSchema = z.object({
+  code: z.string(),
+  filepath: z.string(),
+  padding: z.number().int(),
+  persist: z.object({
+    enable: z.boolean(),
+    path: z.string(),
+  }),
+  clipboard: z.object({
+    enable: z.boolean(),
+    program: z.string(),
+  }),
+  theme: z.string(),
+  extension: z.enum(['webp', 'jpeg', 'png']),
+  quality: z.number().int(),
+  languages: z.record(z.string(), z.string()).default({}),
+})
+
 // TODO: Add feedback saying, that the screenshot was made or that something went wrong.
 void (async () => {
   const tempFilePath = process.argv[2]
@@ -41,17 +61,23 @@ void (async () => {
     throw new Error(`Path to temporary file with screenshot details not passed.`)
   }
 
-  let json: string
+  let optionsAsString: string
   try {
-    json = readFileSync(tempFilePath, { encoding: 'utf8' })
+    optionsAsString = readFileSync(tempFilePath, { encoding: 'utf8' })
   } catch {
     throw new Error(`Failed to read ${tempFilePath} file.`)
   }
 
-  // TODO: Add zod validation.
-  const parsed = safeJsonParse(json)
-  if (parsed === null) {
+  const optionsAsJson = safeJsonParse(optionsAsString)
+  if (optionsAsJson === null) {
     throw new Error(`Invalid JSON in ${tempFilePath} file.`)
+  }
+
+  const parsedOptions = optionsSchema.safeParse(optionsAsJson)
+  if (parsedOptions.success === false) {
+    consola.error(`Options from ${tempFilePath} file are not matching validation schema!`)
+    consola.error(parsedOptions.error.toString())
+    return
   }
 
   // TODO: It might be possible to load only 1 language and theme to improve performance. I have to validate if all languages and themes still can be used in that case.
@@ -61,7 +87,7 @@ void (async () => {
     langs: Object.keys(bundledLanguages),
   })
 
-  const htmlCode = highlighter.codeToHtml(parsed.code, {
+  const htmlCode = highlighter.codeToHtml(parsedOptions.data.code, {
     // TODO: Figure out correct language mapping for current file.
     lang: 'javascript',
     // TODO: Allow users to configure theme.

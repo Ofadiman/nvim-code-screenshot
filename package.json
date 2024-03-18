@@ -6,6 +6,7 @@
   "scripts": {
     "build": "node --loader ts-node/esm --no-warnings scripts/build.ts",
     "clean": "rm -rf $HOME/.cache/puppeteer > /dev/null 2>&1",
+    "debug": "node --loader ts-node/esm --no-warnings tmp/debug.ts",
     "format": "prettier -w .",
     "screenshot": "node bin/screenshot.cjs",
     "setup": "node bin/setup.cjs",
@@ -28,6 +29,7 @@
     "@puppeteer/browsers": "^2.1.0",
     "consola": "^3.2.3",
     "puppeteer": "^22.5.0",
-    "shiki": "^1.2.0"
+    "shiki": "^1.2.0",
+    "zod": "^3.22.4"
   }
 }
