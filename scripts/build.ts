@@ -1,7 +1,7 @@
 import { build } from 'esbuild'
 
 build({
-  entryPoints: ['src/screenshot.ts', 'src/install.ts'],
+  entryPoints: ['src/screenshot.ts', 'src/setup.ts'],
   bundle: true,
   outExtension: {
     '.js': '.cjs',

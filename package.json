@@ -6,11 +6,10 @@
   "scripts": {
     "build": "node --loader ts-node/esm --no-warnings scripts/build.ts",
     "clean": "rm -rf $HOME/.cache/puppeteer > /dev/null 2>&1",
-    "dev:install": "node --loader ts-node/esm --no-warnings src/install.ts",
-    "dev:screenshot": "node --loader ts-node/esm --no-warnings src/screenshot.ts",
     "format": "prettier -w .",
-    "prod:install": "node bin/install.cjs",
-    "prod:screenshot": "node bin/screenshot.cjs"
+    "screenshot": "node bin/screenshot.cjs",
+    "setup": "node bin/setup.cjs",
+    "watch": "nodemon"
   },
   "author": {
     "name": "Szymon Jaworski",
@@ -20,6 +19,7 @@
   "devDependencies": {
     "@types/node": "^20.11.27",
     "esbuild": "0.20.1",
+    "nodemon": "^3.1.0",
     "prettier": "^3.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.2"

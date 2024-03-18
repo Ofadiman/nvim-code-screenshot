@@ -45771,7 +45771,7 @@ var init_consola_36c0034f = __esm({
   }
 });
 
-// src/install.ts
+// src/setup.ts
 var import_node_os = require("node:os");
 var import_node_path2 = require("node:path");
 
@@ -48214,7 +48214,7 @@ init_core();
 init_consola_06ad8a64();
 init_utils();
 
-// src/install.ts
+// src/setup.ts
 void (async () => {
   const defaultPuppeteerCacheDir = (0, import_node_path2.join)((0, import_node_os.homedir)(), ".cache", "puppeteer");
   const installedBrowsers = await getInstalledBrowsers({
