@@ -37,8 +37,9 @@ const optionsSchema = z.object({
     enable: z.boolean(),
     program: z.string(),
   }),
-  // TODO: Validate if passed theme is supported by `shiki` library.
-  theme: z.string(),
+  theme: z.string().refine((value) => Object.keys(bundledThemes).includes(value), {
+    message: `Unsupported theme. Please pass one of the following values: ${Object.keys(bundledThemes).join(', ')}.`,
+  }),
   extension: z.enum(['webp', 'jpeg', 'png']),
   quality: z.number().int(),
   languages: z.record(z.string(), z.string()).default({}),

@@ -12,7 +12,7 @@ local M = {
       program = "xclip",
     },
     -- Available themes: https://shiki.style/themes
-    theme = "material",
+    theme = "catppuccin-mocha",
     extension = "webp",
     quality = 3,
     -- Available language aliases: https://shiki.style/languages
