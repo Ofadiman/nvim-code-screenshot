@@ -20,7 +20,7 @@ local M = {
   },
 }
 
-vim.api.nvim_create_user_command("CodeScreenshotSetup", function()
+vim.api.nvim_create_user_command("CodeshotSetup", function()
   local plugin_dir = debug.getinfo(1, "S").source:sub(2):match("(.*[/\\])")
   local setup_script = plugin_dir .. "../bin/setup.cjs"
 
@@ -33,7 +33,7 @@ vim.api.nvim_create_user_command("CodeScreenshotSetup", function()
   end
 end, {})
 
-vim.api.nvim_create_user_command("CodeScreenshotScreenshot", function()
+vim.api.nvim_create_user_command("CodeshotScreenshot", function()
   local start_pos = vim.fn.getpos("v")
   local end_pos = vim.fn.getpos(".")
 

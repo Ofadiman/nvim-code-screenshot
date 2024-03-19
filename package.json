@@ -1,7 +1,7 @@
 {
-  "name": "nvim-code-screenshot",
+  "name": "nvim-codeshot",
   "version": "1.0.0",
-  "description": "Node.js bindings for neovim plugin code screenshot.",
+  "description": "Node.js bindings for neovim codeshot plugin.",
   "type": "module",
   "scripts": {
     "build": "node --loader ts-node/esm --no-warnings scripts/build.ts",
