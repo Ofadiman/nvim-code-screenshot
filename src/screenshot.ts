@@ -7,7 +7,7 @@ import { z } from 'zod'
 const template = (args: { code: string; padding: number }) => `<!doctype html>
 <html>
   <head>
-    <title>nvim-code-screenshot</title>
+    <title>nvim-codeshot</title>
     <style>
       * {
         margin: 0;
@@ -92,8 +92,7 @@ void (async () => {
 
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
-  // TODO: Allow people to configure code padding.
-  await page.setContent(template({ padding: 10, code: htmlCode }))
+  await page.setContent(template({ padding: parsedOptions.data.padding, code: htmlCode }))
 
   const dimensions = await page.evaluate(() => {
     const pre = document.querySelector('pre')
