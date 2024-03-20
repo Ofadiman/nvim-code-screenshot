@@ -97,7 +97,8 @@ void (async () => {
   const dimensions = await page.evaluate(() => {
     const pre = document.querySelector('pre')
     if (pre === null) {
-      throw new Error(`<pre> element not found on the page`)
+      consola.error('<pre> element not found in DOM!')
+      return null
     }
 
     const preDOMRect = pre.getBoundingClientRect()
@@ -107,29 +108,29 @@ void (async () => {
     }
   })
 
-  await page.setViewport({
-    // NOTE: `width` and `height` are arbitrary numbers here because the `page.screenshot` method takes a screenshot of the entire <pre> element regardless of the dimensions of the page.
-    width: 100,
-    height: 100,
-    // TODO: Allow people to adjust image quality however they want.
-    deviceScaleFactor: 3,
-  })
+  if (dimensions) {
+    await page.setViewport({
+      // NOTE: `width` and `height` are arbitrary numbers here because the `page.screenshot` method takes a screenshot of the entire <pre> element regardless of the dimensions of the page.
+      width: 100,
+      height: 100,
+      deviceScaleFactor: parsedOptions.data.quality,
+    })
 
-  await page.screenshot({
-    // TODO: Allow users save screenshots wherever they want. Maybe I need like 3 commands for that, 1 that will copy to clipboard, 1 that will save to path and 1 that will do both.
-    path: 'tmp/demo.jpeg',
-    type: parsedOptions.data.extension,
-    quality: 100,
-    captureBeyondViewport: true,
-    clip: {
-      x: 0,
-      y: 0,
-      width: dimensions.width,
-      height: dimensions.height,
-      // TODO: Not sure if scale is required here, but if so, it will probably have to be set to the same value as `eviceScaleFactor` in `setViewport` method.
-      scale: 3,
-    },
-  })
+    await page.screenshot({
+      // TODO: Allow users save screenshots wherever they want. Maybe I need like 3 commands for that, 1 that will copy to clipboard, 1 that will save to path and 1 that will do both.
+      path: 'tmp/demo.jpeg',
+      type: parsedOptions.data.extension,
+      quality: 100,
+      captureBeyondViewport: true,
+      clip: {
+        x: 0,
+        y: 0,
+        width: dimensions.width,
+        height: dimensions.height,
+        scale: parsedOptions.data.quality,
+      },
+    })
+  }
 
   await browser.close()
 })()
