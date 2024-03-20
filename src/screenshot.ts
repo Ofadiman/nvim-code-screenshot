@@ -46,17 +46,17 @@ const optionsSchema = z.object({
 })
 
 void (async () => {
-  const tempFilePath = process.argv[2]
-  if (tempFilePath === undefined) {
-    consola.error(`Path to temporary file with script options was not passed.`)
+  const optionsFilePath = process.argv[2]
+  if (optionsFilePath === undefined) {
+    consola.error(`Path to options file not passed.`)
     return
   }
 
   let optionsAsString: string
   try {
-    optionsAsString = readFileSync(tempFilePath, { encoding: 'utf8' })
+    optionsAsString = readFileSync(optionsFilePath, { encoding: 'utf8' })
   } catch (error) {
-    consola.error(`Failed to read ${tempFilePath} file.`)
+    consola.error(`Failed to read ${optionsFilePath} file.`)
     consola.error(error)
     return
   }
@@ -65,14 +65,14 @@ void (async () => {
   try {
     optionsAsJson = JSON.parse(optionsAsString)
   } catch (error) {
-    consola.error(`Invalid JSON in ${tempFilePath} file.`)
+    consola.error(`Invalid JSON in ${optionsFilePath} file.`)
     consola.error(error)
     return
   }
 
   const parsedOptions = optionsSchema.safeParse(optionsAsJson)
   if (parsedOptions.success === false) {
-    consola.error(`Options from ${tempFilePath} file are not matching validation schema!`)
+    consola.error(`Options from ${optionsFilePath} file are not matching validation schema!`)
     consola.error(parsedOptions.error.toString())
     return
   }
