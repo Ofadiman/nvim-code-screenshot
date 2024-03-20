@@ -117,7 +117,7 @@ void (async () => {
 
     await page.screenshot({
       // TODO: Allow users save screenshots wherever they want. Maybe I need like 3 commands for that, 1 that will copy to clipboard, 1 that will save to path and 1 that will do both.
-      path: 'tmp/demo.jpeg',
+      path: `tmp/demo.${parsedOptions.data.extension}`,
       type: parsedOptions.data.extension,
       quality: 100,
       captureBeyondViewport: true,

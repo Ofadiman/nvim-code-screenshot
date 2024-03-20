@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node --loader ts-node/esm --no-warnings scripts/build.ts",
     "clean": "rm -rf $HOME/.cache/puppeteer > /dev/null 2>&1",
-    "debug": "node --loader ts-node/esm --no-warnings tmp/debug.ts",
+    "debug": "node --loader ts-node/esm --no-warnings",
     "format": "prettier -w .",
     "screenshot": "node bin/screenshot.cjs",
     "types": "tsc --noEmit",
