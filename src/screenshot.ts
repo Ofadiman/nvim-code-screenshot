@@ -78,18 +78,16 @@ void (async () => {
     return
   }
 
-  // TODO: It might be possible to load only 1 language and theme to improve performance. I have to validate if all languages and themes still can be used in that case.
-  // NOTE: It seems like all languages are bundled by default: https://shiki.style/guide/install#fine-grained-bundle
   const highlighter = await getHighlighter({
-    themes: Object.keys(bundledThemes),
+    themes: [parsedOptions.data.theme],
+    // TODO: Load only language that is required to render current file.
     langs: Object.keys(bundledLanguages),
   })
 
   const htmlCode = highlighter.codeToHtml(parsedOptions.data.code, {
     // TODO: Figure out correct language mapping for current file.
     lang: 'javascript',
-    // TODO: Allow users to configure theme.
-    theme: 'poimandres',
+    theme: parsedOptions.data.theme,
   })
 
   const browser = await puppeteer.launch()
