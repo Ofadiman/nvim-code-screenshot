@@ -45,7 +45,6 @@ const optionsSchema = z.object({
   languages: z.record(z.string(), z.string()).default({}),
 })
 
-// TODO: Add feedback saying, that the screenshot was made or that something went wrong.
 void (async () => {
   const tempFilePath = process.argv[2]
   if (tempFilePath === undefined) {
@@ -133,4 +132,7 @@ void (async () => {
   }
 
   await browser.close()
+
+  // TODO: Add codeshot path.
+  consola.success(`Codeshot taken!`)
 })()
