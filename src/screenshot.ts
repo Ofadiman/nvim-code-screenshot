@@ -1,8 +1,19 @@
 import consola from 'consola'
-import { readFileSync } from 'node:fs'
+import { readFileSync, existsSync, mkdirSync, statSync } from 'node:fs'
+import { homedir } from 'node:os'
+import { join, resolve } from 'node:path'
 import puppeteer from 'puppeteer'
 import { bundledLanguages, bundledThemes, getHighlighter } from 'shiki'
 import { z } from 'zod'
+
+// NOTE: The function to resolve an absolute path is needed because Node.js cannot resolve paths starting with `~` by default.
+const getAbsolutePath = (inputPath: string) => {
+  if (inputPath.startsWith('~')) {
+    return join(homedir(), inputPath.slice(1))
+  } else {
+    return resolve(inputPath)
+  }
+}
 
 const template = (args: { code: string; padding: number }) => `<!doctype html>
 <html>
@@ -77,6 +88,21 @@ void (async () => {
     return
   }
 
+  const absolutePersistPath = getAbsolutePath(parsedOptions.data.persist.path)
+  if (parsedOptions.data.persist.enable) {
+    const pathExists = existsSync(absolutePersistPath)
+
+    if (pathExists) {
+      const stat = statSync(absolutePersistPath)
+      if (stat.isFile()) {
+        consola.error(`${parsedOptions.data.persist.path} is a file!`)
+        return
+      }
+    } else {
+      mkdirSync(absolutePersistPath, { recursive: true })
+    }
+  }
+
   const highlighter = await getHighlighter({
     themes: [parsedOptions.data.theme],
     // TODO: Load only language that is required to render current file.
@@ -107,6 +133,8 @@ void (async () => {
     }
   })
 
+  // TODO: Replace `demo` with actual file name without extension (e.g. foo.test.ts => foo.test.webp).
+  const codeshotPath = join(absolutePersistPath, `demo.${parsedOptions.data.extension}`)
   if (dimensions) {
     await page.setViewport({
       // NOTE: `width` and `height` are arbitrary numbers here because the `page.screenshot` method takes a screenshot of the entire <pre> element regardless of the dimensions of the page.
@@ -116,8 +144,7 @@ void (async () => {
     })
 
     await page.screenshot({
-      // TODO: Allow users save screenshots wherever they want. Maybe I need like 3 commands for that, 1 that will copy to clipboard, 1 that will save to path and 1 that will do both.
-      path: `tmp/demo.${parsedOptions.data.extension}`,
+      path: codeshotPath,
       type: parsedOptions.data.extension,
       quality: 100,
       captureBeyondViewport: true,
@@ -133,6 +160,7 @@ void (async () => {
 
   await browser.close()
 
-  // TODO: Add codeshot path.
-  consola.success(`Codeshot taken!`)
+  if (parsedOptions.data.persist.enable) {
+    consola.success(`Codeshot saved to ${codeshotPath}!`)
+  }
 })()

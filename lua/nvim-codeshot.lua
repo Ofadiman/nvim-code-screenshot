@@ -3,7 +3,7 @@ local M = {
     padding = 10,
     persist = {
       enable = false,
-      path = "~/",
+      path = "~/.codeshot",
     },
     clipboard = {
       enable = true,
