@@ -1,10 +1,11 @@
 import consola from 'consola'
 import { readFileSync, existsSync, mkdirSync, statSync } from 'node:fs'
 import { homedir } from 'node:os'
-import { join, resolve } from 'node:path'
+import { basename, join, resolve } from 'node:path'
 import puppeteer from 'puppeteer'
 import { bundledLanguages, bundledThemes, getHighlighter } from 'shiki'
 import { z } from 'zod'
+import { snakeCase } from 'change-case'
 
 // NOTE: The function to resolve an absolute path is needed because Node.js cannot resolve paths starting with `~` by default.
 const getAbsolutePath = (inputPath: string) => {
@@ -133,8 +134,8 @@ void (async () => {
     }
   })
 
-  // TODO: Replace `demo` with actual file name without extension (e.g. foo.test.ts => foo.test.webp).
-  const codeshotPath = join(absolutePersistPath, `demo.${parsedOptions.data.extension}`)
+  const filename = `${Date.now()}_${snakeCase(basename(parsedOptions.data.filepath))}`
+  const codeshotPath = join(absolutePersistPath, `${filename}.${parsedOptions.data.extension}`)
   if (dimensions) {
     await page.setViewport({
       // NOTE: `width` and `height` are arbitrary numbers here because the `page.screenshot` method takes a screenshot of the entire <pre> element regardless of the dimensions of the page.

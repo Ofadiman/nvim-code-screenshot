@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@puppeteer/browsers": "^2.1.0",
+    "change-case": "^5.4.3",
     "consola": "^3.2.3",
     "puppeteer": "^22.5.0",
     "shiki": "^1.2.0",

@@ -83,7 +83,6 @@ end, {})
 M.setup = function(options)
   local merged_options = vim.tbl_deep_extend("force", M.options, options)
   M.options = merged_options
-  print(vim.inspect(M.options))
 end
 
 return M
