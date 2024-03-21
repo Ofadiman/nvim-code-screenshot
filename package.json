@@ -30,6 +30,7 @@
     "@puppeteer/browsers": "^2.1.0",
     "change-case": "^5.4.3",
     "consola": "^3.2.3",
+    "execa": "^8.0.1",
     "puppeteer": "^22.5.0",
     "shiki": "^1.2.0",
     "zod": "^3.22.4"

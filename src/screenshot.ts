@@ -6,6 +6,7 @@ import puppeteer from 'puppeteer'
 import { bundledLanguages, bundledThemes, getHighlighter } from 'shiki'
 import { z } from 'zod'
 import { snakeCase } from 'change-case'
+import { execa, execaSync } from 'execa'
 
 // NOTE: The function to resolve an absolute path is needed because Node.js cannot resolve paths starting with `~` by default.
 const getAbsolutePath = (inputPath: string) => {
@@ -47,7 +48,7 @@ const optionsSchema = z.object({
   }),
   clipboard: z.object({
     enable: z.boolean(),
-    program: z.string(),
+    program: z.enum(['xclip']),
   }),
   theme: z.string().refine((value) => Object.keys(bundledThemes).includes(value), {
     message: `Unsupported theme. Please pass one of the following values: ${Object.keys(bundledThemes).join(', ')}.`,
@@ -157,6 +158,14 @@ void (async () => {
         scale: parsedOptions.data.quality,
       },
     })
+
+    if (parsedOptions.data.clipboard.enable) {
+      if (parsedOptions.data.clipboard.program) {
+        execaSync('xclip', ['-selection', 'clipboard', '-t', 'image/png', '-i', codeshotPath], {
+          stdio: 'ignore',
+        })
+      }
+    }
   }
 
   await browser.close()
