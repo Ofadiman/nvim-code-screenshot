@@ -6,7 +6,7 @@ import puppeteer from 'puppeteer'
 import { bundledLanguages, bundledThemes, getHighlighter } from 'shiki'
 import { z } from 'zod'
 import { snakeCase } from 'change-case'
-import { execa, execaSync } from 'execa'
+import { execaSync } from 'execa'
 
 // NOTE: The function to resolve an absolute path is needed because Node.js cannot resolve paths starting with `~` by default.
 const getAbsolutePath = (inputPath: string) => {
@@ -59,6 +59,8 @@ const optionsSchema = z.object({
 })
 
 void (async () => {
+  // TODO: Handle state when clipboard and persist are disabled.
+
   const optionsFilePath = process.argv[2]
   if (optionsFilePath === undefined) {
     consola.error(`Path to options file not passed.`)
@@ -124,7 +126,6 @@ void (async () => {
   const dimensions = await page.evaluate(() => {
     const pre = document.querySelector('pre')
     if (pre === null) {
-      consola.error('<pre> element not found in DOM!')
       return null
     }
 
@@ -135,42 +136,50 @@ void (async () => {
     }
   })
 
+  if (dimensions === null) {
+    consola.error('<pre> element not found in DOM!')
+    await browser.close()
+    return
+  }
+
   const filename = `${Date.now()}_${snakeCase(basename(parsedOptions.data.filepath))}`
   const codeshotPath = join(absolutePersistPath, `${filename}.${parsedOptions.data.extension}`)
-  if (dimensions) {
-    await page.setViewport({
-      // NOTE: `width` and `height` are arbitrary numbers here because the `page.screenshot` method takes a screenshot of the entire <pre> element regardless of the dimensions of the page.
-      width: 100,
-      height: 100,
-      deviceScaleFactor: parsedOptions.data.quality,
-    })
+  await page.setViewport({
+    // NOTE: `width` and `height` are arbitrary numbers here because the `page.screenshot` method takes a screenshot of the entire <pre> element regardless of the dimensions of the page.
+    width: 100,
+    height: 100,
+    deviceScaleFactor: parsedOptions.data.quality,
+  })
 
-    await page.screenshot({
-      path: codeshotPath,
-      type: parsedOptions.data.extension,
-      quality: 100,
-      captureBeyondViewport: true,
-      clip: {
-        x: 0,
-        y: 0,
-        width: dimensions.width,
-        height: dimensions.height,
-        scale: parsedOptions.data.quality,
-      },
-    })
-
-    if (parsedOptions.data.clipboard.enable) {
-      if (parsedOptions.data.clipboard.program) {
-        execaSync('xclip', ['-selection', 'clipboard', '-t', 'image/png', '-i', codeshotPath], {
-          stdio: 'ignore',
-        })
-      }
-    }
-  }
+  await page.screenshot({
+    path: codeshotPath,
+    type: parsedOptions.data.extension,
+    quality: 100,
+    captureBeyondViewport: true,
+    clip: {
+      x: 0,
+      y: 0,
+      width: dimensions.width,
+      height: dimensions.height,
+      scale: parsedOptions.data.quality,
+    },
+  })
 
   await browser.close()
 
-  if (parsedOptions.data.persist.enable) {
+  if (parsedOptions.data.clipboard.enable) {
+    if (parsedOptions.data.clipboard.program === 'xclip') {
+      execaSync('xclip', ['-selection', 'clipboard', '-t', 'image/png', '-i', codeshotPath], {
+        stdio: 'ignore',
+      })
+    }
+  }
+
+  if (parsedOptions.data.persist.enable && parsedOptions.data.clipboard.enable) {
+    consola.success(`Codeshot saved to ${codeshotPath} and clipboard!`)
+  } else if (parsedOptions.data.persist.enable) {
+    consola.success(`Codeshot saved to ${codeshotPath}!`)
+  } else if (parsedOptions.data.clipboard.enable) {
     consola.success(`Codeshot saved to ${codeshotPath}!`)
   }
 })()
