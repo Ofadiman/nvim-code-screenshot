@@ -1,0 +1,40 @@
+name: Documentation
+description: Documentation updates, additions, or improvements.
+labels:
+  - docs
+projects:
+  - Ofadiman/6
+assignees:
+  - Ofadiman
+body:
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: Description
+      description: Describe the main contents or topics that need to be covered in the documentation.
+      placeholder: |
+        The technical documentation is missing a section on how to perform the database migrations.
+
+  - type: textarea
+    attributes:
+      label: Resources
+      description: List any relevant resources, such as documentation, tutorials, or external links, that might be helpful in completing the task.
+      placeholder: |
+        - [AWS pricing calculator.](https://calculator.aws/)
+        - [Documentation of the docusaurus tool.](https://docusaurus.io/)
+        - [MaterialUI library documentation.](https://mui.com/material-ui/)
+        - [Railway service pricing.](https://railway.app/pricing)
+        - [Using secrets in GitHub Actions.](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions)
+
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: Acceptance Criteria
+      description: Specify the conditions that must be met for the task to be considered complete and satisfactory.
+      placeholder: |
+        - [ ] The documentation contains information about adding a file containing database migrations.
+        - [ ] The documentation contains information about running migrations on a local database.
+        - [ ] The documentation contains information about running migrations on a production database.
+        - [ ] The documentation is reviewed and approved by relevant team members.

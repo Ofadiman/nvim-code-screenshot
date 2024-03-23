@@ -1,0 +1,52 @@
+name: Refactor
+description: Code restructuring or optimization for improved readability, maintainability, or performance.
+labels:
+  - refactor
+projects:
+  - Ofadiman/6
+assignees:
+  - Ofadiman
+body:
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: Description
+      description: Describe which parts of the code require refactoring and why.
+      placeholder: |
+        Currently, we use a combination of `class-validator` and `class-transformer` libraries to validate data in the backend service. There are several problems with using these libraries:
+
+        - Writing a new validator is complicated because it requires knowledge of how decorators work in TypeScript.
+        - Libraries do not provide type safety.
+
+        For some time, the `zod` library has been available in the npm environment. This library does not use decorators and provides 100% type safety of validated objects.
+
+  - type: textarea
+    attributes:
+      label: Technical Requirements and Implementation Details
+      description: Describe the technical requirements that must be considered for completing the task. If applicable, include implementation details that should be followed while completing the task.
+      placeholder: |
+        - Dependencies should be updated using the current package manager.
+        - The chosen solution should allow to deploy applications in containers.
+        - The database password should be saved in the project secrets.
+
+  - type: textarea
+    attributes:
+      label: Resources
+      description: List any relevant resources, such as documentation, tutorials, or external links, that might be helpful in completing the task.
+      placeholder: |
+        - [AWS pricing calculator.](https://calculator.aws/)
+        - [Documentation of the docusaurus tool.](https://docusaurus.io/)
+        - [MaterialUI library documentation.](https://mui.com/material-ui/)
+        - [Railway service pricing.](https://railway.app/pricing)
+        - [Using secrets in GitHub Actions.](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions)
+
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: Acceptance Criteria
+      description: Specify the conditions that must be met for the task to be considered complete and satisfactory.
+      placeholder: |
+        - [ ] Data validation is performed using `zod` library.
+        - [ ] `class-validator` and `class-transformer` libraries are uninstalled from the project.

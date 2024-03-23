@@ -1,0 +1,47 @@
+name: Bug
+description: An issue or error in the code that needs to be fixed.
+labels:
+  - bug
+projects:
+  - Ofadiman/6
+assignees:
+  - Ofadiman
+body:
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: Current Behavior
+      description: Provide a clear and concise description of what is currently happening.
+      placeholder: |
+        When creating a screenshot of the code, the padding configured in user options is ignored.
+
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: Expected Behavior
+      description: Provide a clear and concise description of what you expected to happen.
+      placeholder: |
+        The functionality to create a screenshot of the code takes into account the padding configured in the user options.
+
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: Steps To Reproduce
+      description: Describe the steps to reproduce the bug.
+      placeholder: |
+        1. Go to user settings.
+        2. Configure padding (e.g. 20px).
+        3. Select a few lines of code and make a screenshot.
+        4. Open the image with screenshot.
+
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: Screenshots and Videos
+      description: If applicable, add screenshots or videos to help explain the problem.
+      placeholder: |
+        Attach or provide links to any relevant screenshots or videos.

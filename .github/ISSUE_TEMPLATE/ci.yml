@@ -1,0 +1,47 @@
+name: CI/CD
+description: Changes to CI/CD processes.
+labels:
+  - ci
+projects:
+  - Ofadiman/6
+assignees:
+  - Ofadiman
+body:
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: Description
+      description: Describe what changes to CI/CD processes are necessary and why.
+      placeholder: |
+        The `actions/checkout` github action recently released version 4 and we should update our CI/CD pipelines to use the latest version.
+
+  - type: textarea
+    attributes:
+      label: Technical Requirements and Implementation Details
+      description: Describe the technical requirements that must be considered for completing the task. If applicable, include implementation details that should be followed while completing the task.
+      placeholder: |
+        - Dependencies should be updated using the current package manager.
+        - The chosen solution should allow to deploy applications in containers.
+        - The database password should be saved in the project secrets.
+
+  - type: textarea
+    attributes:
+      label: Resources
+      description: List any relevant resources, such as documentation, tutorials, or external links, that might be helpful in completing the task.
+      placeholder: |
+        - [AWS pricing calculator.](https://calculator.aws/)
+        - [Documentation of the docusaurus tool.](https://docusaurus.io/)
+        - [MaterialUI library documentation.](https://mui.com/material-ui/)
+        - [Railway service pricing.](https://railway.app/pricing)
+        - [Using secrets in GitHub Actions.](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions)
+
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: Acceptance Criteria
+      description: Specify the conditions that must be met for the task to be considered complete and satisfactory.
+      placeholder: |
+        - [ ] Pipeline CI/CD uses the latest version of the action `actions/checkout`.
+        - [ ] When the CI/CD pipeline fails, a notification is sent to slack.

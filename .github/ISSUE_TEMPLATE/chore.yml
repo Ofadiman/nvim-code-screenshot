@@ -1,0 +1,47 @@
+name: Chore
+description: Routine tasks or maintenance work, like dependencies updates or configuration changes.
+labels:
+  - chore
+projects:
+  - Ofadiman/6
+assignees:
+  - Ofadiman
+body:
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: Description
+      description: Describe what exactly should be done and why.
+      placeholder: |
+        Update dependencies to the latest versions.
+
+  - type: textarea
+    attributes:
+      label: Technical Requirements and Implementation Details
+      description: Describe the technical requirements that must be considered for completing the task. If applicable, include implementation details that should be followed while completing the task.
+      placeholder: |
+        - Dependencies should be updated using the current package manager.
+        - The chosen solution should allow to deploy applications in containers.
+        - The database password should be saved in the project secrets.
+
+  - type: textarea
+    attributes:
+      label: Resources
+      description: List any relevant resources, such as documentation, tutorials, or external links, that might be helpful in completing the task.
+      placeholder: |
+        - [AWS pricing calculator.](https://calculator.aws/)
+        - [Documentation of the docusaurus tool.](https://docusaurus.io/)
+        - [MaterialUI library documentation.](https://mui.com/material-ui/)
+        - [Railway service pricing.](https://railway.app/pricing)
+        - [Using secrets in GitHub Actions.](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions)
+
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: Acceptance Criteria
+      description: Specify the conditions that must be met for the task to be considered complete and satisfactory.
+      placeholder: |
+        - [ ] Dependencies are updated to the latest versions.
+        - [ ] Dependencies that have not been updated are listed in the appropriate section of the technical documentation with the reason why they could not be updated.
