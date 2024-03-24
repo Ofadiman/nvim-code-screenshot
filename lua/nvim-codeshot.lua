@@ -1,9 +1,9 @@
 local M = {
   options = {
     padding = 10,
-    persist = {
+    output = {
       enable = false,
-      path = "~/.codeshot",
+      directory = "~/.codeshot",
     },
     clipboard = {
       enable = true,

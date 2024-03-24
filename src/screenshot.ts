@@ -42,9 +42,9 @@ const optionsSchema = z.object({
   code: z.string(),
   filepath: z.string(),
   padding: z.number().int(),
-  persist: z.object({
+  output: z.object({
     enable: z.boolean(),
-    path: z.string(),
+    directory: z.string(),
   }),
   clipboard: z.object({
     enable: z.boolean(),
@@ -92,14 +92,14 @@ void (async () => {
     return
   }
 
-  const absolutePersistPath = getAbsolutePath(parsedOptions.data.persist.path)
-  if (parsedOptions.data.persist.enable) {
+  const absolutePersistPath = getAbsolutePath(parsedOptions.data.output.directory)
+  if (parsedOptions.data.output.enable) {
     const pathExists = existsSync(absolutePersistPath)
 
     if (pathExists) {
       const stat = statSync(absolutePersistPath)
       if (stat.isFile()) {
-        consola.error(`${parsedOptions.data.persist.path} is a file!`)
+        consola.error(`${parsedOptions.data.output.directory} is a file!`)
         return
       }
     } else {
@@ -175,9 +175,9 @@ void (async () => {
     }
   }
 
-  if (parsedOptions.data.persist.enable && parsedOptions.data.clipboard.enable) {
+  if (parsedOptions.data.output.enable && parsedOptions.data.clipboard.enable) {
     consola.success(`Codeshot saved to ${codeshotPath} and clipboard!`)
-  } else if (parsedOptions.data.persist.enable) {
+  } else if (parsedOptions.data.output.enable) {
     consola.success(`Codeshot saved to ${codeshotPath}!`)
   } else if (parsedOptions.data.clipboard.enable) {
     consola.success(`Codeshot saved to ${codeshotPath}!`)
