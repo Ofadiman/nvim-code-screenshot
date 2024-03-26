@@ -4,6 +4,9 @@ local M = {
     output = {
       enable = false,
       directory = "~/.codeshot",
+      formatter = function(filename)
+        return filename
+      end,
     },
     clipboard = {
       enable = true,
@@ -19,6 +22,25 @@ local M = {
     languages = nil,
   },
 }
+
+-- NOTE: This function is required to sanitize options passed to vim.fn.json_encode from unserializable data types (e.g. functions).
+local function sanitize_table_for_serialization(original_table)
+  local sanitized_table = vim.deepcopy(original_table)
+
+  local function sanitize(inner_table)
+    for key, value in pairs(inner_table) do
+      if type(value) == "function" or type(value) == "userdata" then
+        inner_table[key] = nil
+      elseif type(value) == "table" then
+        sanitize(value)
+      end
+    end
+  end
+
+  sanitize(sanitized_table)
+
+  return sanitized_table
+end
 
 vim.api.nvim_create_user_command("CodeshotSetup", function()
   local plugin_dir = debug.getinfo(1, "S").source:sub(2):match("(.*[/\\])")
@@ -57,10 +79,16 @@ vim.api.nvim_create_user_command("CodeshotScreenshot", function()
 
   vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", true)
 
-  local args = vim.tbl_deep_extend("error", M.options, { code = code, filepath = vim.fn.expand("%") })
+  local args = vim.tbl_deep_extend("error", M.options, {
+    code = code,
+    filepath = vim.fn.expand("%"),
+    output = {
+      filename = M.options.output.formatter(vim.fn.expand("%:t")),
+    },
+  })
   local directory = debug.getinfo(1, "S").source:sub(2):match("(.*[/\\])")
   local script = directory .. "../bin/screenshot.cjs"
-  local json = vim.fn.json_encode(args)
+  local json = vim.fn.json_encode(sanitize_table_for_serialization(args))
 
   local tempFile = os.tmpname() .. ".json"
   local file = io.open(tempFile, "w")

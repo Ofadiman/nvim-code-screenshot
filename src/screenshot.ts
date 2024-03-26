@@ -1,11 +1,10 @@
 import consola from 'consola'
 import { readFileSync, existsSync, mkdirSync, statSync } from 'node:fs'
 import { homedir } from 'node:os'
-import { basename, join, resolve } from 'node:path'
+import { join, resolve } from 'node:path'
 import puppeteer from 'puppeteer'
 import { bundledLanguages, bundledThemes, getHighlighter } from 'shiki'
 import { z } from 'zod'
-import { snakeCase } from 'change-case'
 import { execaSync } from 'execa'
 
 // NOTE: The function to resolve an absolute path is needed because Node.js cannot resolve paths starting with `~` by default.
@@ -45,6 +44,7 @@ const optionsSchema = z.object({
   output: z.object({
     enable: z.boolean(),
     directory: z.string(),
+    filename: z.string(),
   }),
   clipboard: z.object({
     enable: z.boolean(),
@@ -142,8 +142,10 @@ void (async () => {
     return
   }
 
-  const filename = `${Date.now()}_${snakeCase(basename(parsedOptions.data.filepath))}`
-  const codeshotPath = join(absolutePersistPath, `${filename}.${parsedOptions.data.extension}`)
+  const codeshotPath = join(
+    absolutePersistPath,
+    `${parsedOptions.data.output.filename}.${parsedOptions.data.extension}`,
+  )
   await page.setViewport({
     // NOTE: `width` and `height` are arbitrary numbers here because the `page.screenshot` method takes a screenshot of the entire <pre> element regardless of the dimensions of the page.
     width: 100,
