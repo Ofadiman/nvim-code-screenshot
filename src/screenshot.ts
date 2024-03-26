@@ -154,7 +154,6 @@ void (async () => {
   await page.screenshot({
     path: codeshotPath,
     type: parsedOptions.data.extension,
-    quality: 100,
     captureBeyondViewport: true,
     clip: {
       x: 0,

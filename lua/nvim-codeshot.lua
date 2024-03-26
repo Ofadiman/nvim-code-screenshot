@@ -17,7 +17,7 @@ local M = {
     },
     -- Available themes: https://shiki.style/themes
     theme = "catppuccin-mocha",
-    extension = "webp",
+    extension = "png",
     quality = 3,
     -- Available language aliases: https://shiki.style/languages
     languages = nil,
