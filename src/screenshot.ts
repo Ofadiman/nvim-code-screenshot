@@ -59,8 +59,6 @@ const optionsSchema = z.object({
 })
 
 void (async () => {
-  // TODO: Handle state when clipboard and persist are disabled.
-
   const optionsFilePath = process.argv[2]
   if (optionsFilePath === undefined) {
     consola.error(`Path to options file not passed.`)

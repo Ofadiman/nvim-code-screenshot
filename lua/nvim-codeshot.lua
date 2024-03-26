@@ -1,5 +1,6 @@
 local M = {
   options = {
+    debug = false,
     padding = 10,
     output = {
       enable = false,
@@ -56,6 +57,13 @@ vim.api.nvim_create_user_command("CodeshotSetup", function()
 end, {})
 
 vim.api.nvim_create_user_command("CodeshotScreenshot", function()
+  if M.options.clipboard.enable == false and M.options.output.enable == false then
+    if M.options.debug == true then
+      print("Both \"clipboard.enable\" and \"output.enable\" options are set to \"false\", so this command does nothing right now.")
+    end
+    return
+  end
+
   local start_pos = vim.fn.getpos("v")
   local end_pos = vim.fn.getpos(".")
 
