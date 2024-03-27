@@ -20,6 +20,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.11.27",
+    "@types/which": "^3.0.3",
     "esbuild": "0.20.1",
     "nodemon": "^3.1.0",
     "prettier": "^3.2.5",
@@ -33,6 +34,7 @@
     "execa": "^8.0.1",
     "puppeteer": "^22.5.0",
     "shiki": "^1.2.0",
+    "which": "^4.0.0",
     "zod": "^3.22.4"
   }
 }

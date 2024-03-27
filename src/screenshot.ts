@@ -6,6 +6,8 @@ import puppeteer from 'puppeteer'
 import { bundledLanguages, bundledThemes, getHighlighter } from 'shiki'
 import { z } from 'zod'
 import { execaSync } from 'execa'
+import util from 'node:util'
+import which from 'which'
 
 // NOTE: The function to resolve an absolute path is needed because Node.js cannot resolve paths starting with `~` by default.
 const getAbsolutePath = (inputPath: string) => {
@@ -37,6 +39,10 @@ const template = (args: { code: string; padding: number }) => `<!doctype html>
   </body>
 </html>`
 
+const CLIPBOARD_PROGRAM_COMMAND_TEMPLATES = {
+  xclip: 'xclip -selection clipboard -t image/png -i %s',
+} as const
+
 const optionsSchema = z.object({
   code: z.string(),
   filepath: z.string(),
@@ -48,7 +54,7 @@ const optionsSchema = z.object({
   }),
   clipboard: z.object({
     enable: z.boolean(),
-    program: z.enum(['xclip']),
+    command: z.string().nullable().default(null),
   }),
   theme: z.string().refine((value) => Object.keys(bundledThemes).includes(value), {
     message: `Unsupported theme. Please pass one of the following values: ${Object.keys(bundledThemes).join(', ')}.`,
@@ -167,8 +173,37 @@ void (async () => {
   await browser.close()
 
   if (parsedOptions.data.clipboard.enable) {
-    if (parsedOptions.data.clipboard.program === 'xclip') {
-      execaSync('xclip', ['-selection', 'clipboard', '-t', 'image/png', '-i', codeshotPath], {
+    if (parsedOptions.data.clipboard.command === null) {
+      const xclip = which.sync('xclip', { nothrow: true })
+      if (xclip !== null) {
+        const formattedCommand = util.format(
+          CLIPBOARD_PROGRAM_COMMAND_TEMPLATES.xclip,
+          codeshotPath,
+        )
+
+        const [binary, ...rest] = formattedCommand.split(' ')
+
+        if (binary === undefined) {
+          consola.error(`Command passed to clipboard.command is invalid: ${formattedCommand}`)
+          return
+        }
+
+        execaSync(binary, rest, {
+          stdio: 'ignore',
+        })
+      }
+    }
+
+    if (parsedOptions.data.clipboard.command !== null) {
+      const formattedCommand = util.format(parsedOptions.data.clipboard.command, codeshotPath)
+      const [binary, ...rest] = formattedCommand.split(' ')
+
+      if (binary === undefined) {
+        consola.error(`Command passed to clipboard.command is invalid: ${formattedCommand}`)
+        return
+      }
+
+      execaSync(binary, rest, {
         stdio: 'ignore',
       })
     }
