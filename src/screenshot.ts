@@ -18,35 +18,13 @@ const getAbsolutePath = (inputPath: string) => {
   }
 }
 
-const template = (args: { code: string; padding: number }) => `<!doctype html>
-<html>
-  <head>
-    <title>nvim-codeshot</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-      }
-
-      pre {
-        width: fit-content;
-        padding: ${args.padding}px;
-      }
-    </style>
-  </head>
-  <body>
-    ${args.code}
-  </body>
-</html>`
-
-const CLIPBOARD_PROGRAM_COMMAND_TEMPLATES = {
-  xclip: 'xclip -selection clipboard -t image/png -i %s',
-} as const
-
 const optionsSchema = z.object({
   code: z.string(),
   filepath: z.string(),
-  padding: z.number().int(),
+  padding: z.object({
+    vertical: z.number().int(),
+    horizontal: z.number().int(),
+  }),
   output: z.object({
     enable: z.boolean(),
     directory: z.string(),
@@ -63,6 +41,33 @@ const optionsSchema = z.object({
   quality: z.number().int(),
   languages: z.record(z.string(), z.string()).default({}),
 })
+
+type Options = z.infer<typeof optionsSchema>
+
+const template = (args: { code: string; padding: Options['padding'] }) => `<!doctype html>
+<html>
+  <head>
+    <title>nvim-codeshot</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      pre {
+        width: fit-content;
+        padding: ${args.padding.vertical}px ${args.padding.horizontal}px;
+      }
+    </style>
+  </head>
+  <body>
+    ${args.code}
+  </body>
+</html>`
+
+const CLIPBOARD_PROGRAM_COMMAND_TEMPLATES = {
+  xclip: 'xclip -selection clipboard -t image/png -i %s',
+} as const
 
 void (async () => {
   const optionsFilePath = process.argv[2]

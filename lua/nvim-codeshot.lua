@@ -1,7 +1,10 @@
 local M = {
   options = {
     debug = false,
-    padding = 10,
+    padding = {
+      horizontal = 10,
+      vertical = 10,
+    },
     output = {
       enable = false,
       directory = "~/.codeshot",
