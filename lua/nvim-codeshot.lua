@@ -1,6 +1,7 @@
 local M = {
   options = {
     debug = false,
+    breadcrumbs = true,
     padding = {
       horizontal = 10,
       vertical = 10,

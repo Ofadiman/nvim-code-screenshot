@@ -8,6 +8,7 @@ import { z } from 'zod'
 import { execaSync } from 'execa'
 import util from 'node:util'
 import which from 'which'
+import { cwd } from 'node:process'
 
 const indentTabs = (args: { code: string; tabWidth: number }): string => {
   const regex = new RegExp('^\t+', '')
@@ -50,6 +51,7 @@ const getAbsolutePath = (inputPath: string) => {
 const optionsSchema = z.object({
   code: z.string(),
   filepath: z.string(),
+  breadcrumbs: z.boolean(),
   html: z.object({
     template: z.string(),
     watermark: z.string(),
@@ -202,6 +204,31 @@ void (async () => {
     theme: parsedOptions.data.theme,
     transformers: [
       {
+        code(node) {
+          if (parsedOptions.data.breadcrumbs === false) {
+            return
+          }
+
+          if (commentSettings === undefined) {
+            return
+          }
+
+          node.children.unshift(
+            {
+              type: 'element',
+              tagName: 'span',
+              properties: {
+                style: `color:${commentSettings.settings.foreground};`,
+                class: 'line',
+              },
+              children: [
+                { type: 'text', value: parsedOptions.data.filepath.replace(cwd() + '/', '') },
+              ],
+            },
+            { type: 'text', value: '\n' },
+            { type: 'text', value: '\n' },
+          )
+        },
         line(node, line) {
           if (commentSettings === undefined) {
             return
