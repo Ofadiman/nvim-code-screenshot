@@ -178,10 +178,46 @@ void (async () => {
     langs: Object.keys(bundledLanguages),
   })
 
+  const commentSettings = highlighter.getTheme(parsedOptions.data.theme).settings.find((o) => {
+    if (o.scope === undefined) {
+      return false
+    }
+
+    if (typeof o.scope === 'string') {
+      return o.scope === 'comment'
+    }
+
+    if (Array.isArray(o.scope)) {
+      return o.scope.includes('comment')
+    }
+
+    return false
+  })
+
+  const padEnd = codeToHighlight.split('\n').length.toString().length + 1
+
   let htmlCode = highlighter.codeToHtml(codeToHighlight, {
     // TODO: Figure out correct language mapping for current file.
     lang: 'javascript',
     theme: parsedOptions.data.theme,
+    transformers: [
+      {
+        line(node, line) {
+          if (commentSettings === undefined) {
+            return
+          }
+
+          node.children.unshift({
+            type: 'element',
+            tagName: 'span',
+            properties: {
+              style: `color:${commentSettings.settings.foreground};`,
+            },
+            children: [{ type: 'text', value: line.toString().padEnd(padEnd, ' ') }],
+          })
+        },
+      },
+    ],
   })
 
   const browser = await puppeteer.launch()
