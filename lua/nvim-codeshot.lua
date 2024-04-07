@@ -6,9 +6,13 @@ local M = {
       vertical = 10,
     },
     html = {
-      template = nil,
-      watermark = nil,
-      styles = nil,
+      template = "",
+      watermark = "",
+      styles = "",
+    },
+    whitespace = {
+      trim = true,
+      tab_width = 2,
     },
     output = {
       enable = false,

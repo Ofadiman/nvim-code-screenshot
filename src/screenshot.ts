@@ -9,6 +9,35 @@ import { execaSync } from 'execa'
 import util from 'node:util'
 import which from 'which'
 
+const indentTabs = (args: { code: string; tabWidth: number }): string => {
+  const regex = new RegExp('^\t+', '')
+  return args.code
+    .split('\n')
+    .map((line) => line.replace(regex, (match) => ' '.repeat(match.length * args.tabWidth)))
+    .join('\n')
+}
+
+const trimCode = (args: { code: string }): string => {
+  const regex = new RegExp('^ +', '')
+  const indentation = args.code.split('\n').reduce((acc, line) => {
+    if (line === '') {
+      return acc
+    }
+
+    const [match] = line.match(regex) ?? []
+    if (match === undefined) {
+      return 0
+    }
+
+    return Math.min(acc, match.length)
+  }, Infinity)
+
+  return args.code
+    .split('\n')
+    .map((line) => line.replace(' '.repeat(indentation), ''))
+    .join('\n')
+}
+
 // NOTE: The function to resolve an absolute path is needed because Node.js cannot resolve paths starting with `~` by default.
 const getAbsolutePath = (inputPath: string) => {
   if (inputPath.startsWith('~')) {
@@ -22,9 +51,13 @@ const optionsSchema = z.object({
   code: z.string(),
   filepath: z.string(),
   html: z.object({
-    template: z.string().nullable().default(null),
-    watermark: z.string().nullable().default(null),
-    styles: z.string().nullable().default(null),
+    template: z.string(),
+    watermark: z.string(),
+    styles: z.string(),
+  }),
+  whitespace: z.object({
+    trim: z.boolean(),
+    tab_width: z.number().int(),
   }),
   padding: z.object({
     vertical: z.number().int(),
@@ -128,13 +161,24 @@ void (async () => {
     }
   }
 
+  let codeToHighlight = indentTabs({
+    code: parsedOptions.data.code,
+    tabWidth: parsedOptions.data.whitespace.tab_width,
+  })
+
+  if (parsedOptions.data.whitespace.trim === true) {
+    codeToHighlight = trimCode({
+      code: codeToHighlight,
+    })
+  }
+
   const highlighter = await getHighlighter({
     themes: [parsedOptions.data.theme],
     // TODO: Load only language that is required to render current file.
     langs: Object.keys(bundledLanguages),
   })
 
-  const htmlCode = highlighter.codeToHtml(parsedOptions.data.code, {
+  let htmlCode = highlighter.codeToHtml(codeToHighlight, {
     // TODO: Figure out correct language mapping for current file.
     lang: 'javascript',
     theme: parsedOptions.data.theme,
@@ -143,13 +187,13 @@ void (async () => {
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
 
-  if (parsedOptions.data.html.template === null) {
+  if (parsedOptions.data.html.template === '') {
     await page.setContent(
       template({
         padding: parsedOptions.data.padding,
         code: htmlCode,
-        watermark: parsedOptions.data.html.watermark ?? '',
-        styles: parsedOptions.data.html.styles ?? '',
+        watermark: parsedOptions.data.html.watermark,
+        styles: parsedOptions.data.html.styles,
       }),
     )
   } else {
