@@ -21,6 +21,7 @@ const getAbsolutePath = (inputPath: string) => {
 const optionsSchema = z.object({
   code: z.string(),
   filepath: z.string(),
+  html: z.string().nullable().default(null),
   padding: z.object({
     vertical: z.number().int(),
     horizontal: z.number().int(),
@@ -130,7 +131,17 @@ void (async () => {
 
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
-  await page.setContent(template({ padding: parsedOptions.data.padding, code: htmlCode }))
+
+  if (parsedOptions.data.html === null) {
+    await page.setContent(
+      template({
+        padding: parsedOptions.data.padding,
+        code: htmlCode,
+      }),
+    )
+  } else {
+    await page.setContent(util.format(parsedOptions.data.html, htmlCode))
+  }
 
   const dimensions = await page.evaluate(() => {
     const pre = document.querySelector('pre')
