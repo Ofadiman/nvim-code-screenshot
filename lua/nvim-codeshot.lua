@@ -5,7 +5,10 @@ local M = {
       horizontal = 10,
       vertical = 10,
     },
-    html = nil,
+    html = {
+      template = nil,
+      watermark = nil,
+    },
     output = {
       enable = false,
       directory = "~/.codeshot",

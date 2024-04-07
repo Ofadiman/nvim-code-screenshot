@@ -21,7 +21,10 @@ const getAbsolutePath = (inputPath: string) => {
 const optionsSchema = z.object({
   code: z.string(),
   filepath: z.string(),
-  html: z.string().nullable().default(null),
+  html: z.object({
+    template: z.string().nullable().default(null),
+    watermark: z.string().nullable().default(null),
+  }),
   padding: z.object({
     vertical: z.number().int(),
     horizontal: z.number().int(),
@@ -45,7 +48,11 @@ const optionsSchema = z.object({
 
 type Options = z.infer<typeof optionsSchema>
 
-const template = (args: { code: string; padding: Options['padding'] }) => `<!doctype html>
+const template = (args: {
+  code: string
+  padding: Options['padding']
+  watermark: string
+}) => `<!doctype html>
 <html>
   <head>
     <title>nvim-codeshot</title>
@@ -61,8 +68,9 @@ const template = (args: { code: string; padding: Options['padding'] }) => `<!doc
       }
     </style>
   </head>
-  <body>
+  <body style="width: fit-content; position: relative">
     ${args.code}
+    ${args.watermark}
   </body>
 </html>`
 
@@ -132,15 +140,16 @@ void (async () => {
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
 
-  if (parsedOptions.data.html === null) {
+  if (parsedOptions.data.html.template === null) {
     await page.setContent(
       template({
         padding: parsedOptions.data.padding,
         code: htmlCode,
+        watermark: parsedOptions.data.html.watermark ?? '',
       }),
     )
   } else {
-    await page.setContent(util.format(parsedOptions.data.html, htmlCode))
+    await page.setContent(util.format(parsedOptions.data.html.template, htmlCode))
   }
 
   const dimensions = await page.evaluate(() => {
