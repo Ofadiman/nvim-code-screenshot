@@ -8,6 +8,7 @@ local M = {
     html = {
       template = nil,
       watermark = nil,
+      styles = nil,
     },
     output = {
       enable = false,

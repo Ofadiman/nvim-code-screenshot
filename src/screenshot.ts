@@ -24,6 +24,7 @@ const optionsSchema = z.object({
   html: z.object({
     template: z.string().nullable().default(null),
     watermark: z.string().nullable().default(null),
+    styles: z.string().nullable().default(null),
   }),
   padding: z.object({
     vertical: z.number().int(),
@@ -52,6 +53,7 @@ const template = (args: {
   code: string
   padding: Options['padding']
   watermark: string
+  styles: string
 }) => `<!doctype html>
 <html>
   <head>
@@ -67,6 +69,7 @@ const template = (args: {
         padding: ${args.padding.vertical}px ${args.padding.horizontal}px;
       }
     </style>
+    ${args.styles}
   </head>
   <body style="width: fit-content; position: relative">
     ${args.code}
@@ -146,6 +149,7 @@ void (async () => {
         padding: parsedOptions.data.padding,
         code: htmlCode,
         watermark: parsedOptions.data.html.watermark ?? '',
+        styles: parsedOptions.data.html.styles ?? '',
       }),
     )
   } else {
