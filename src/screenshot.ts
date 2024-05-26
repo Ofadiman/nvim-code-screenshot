@@ -78,8 +78,7 @@ const optionsSchema = z.object({
     message: `Unsupported theme. Please pass one of the following values: ${Object.keys(bundledThemes).join(', ')}.`,
   }),
   extension: z.enum(['webp', 'jpeg', 'png']),
-  // TODO: Check if this option makes any sense at all. Maybe setting `deviceScaleFactor` to 3 is simply enough for good quality screenshots.
-  quality: z.number().int(),
+  scale: z.number().int(),
   languages: z.record(z.string(), z.string()).default({}),
 })
 
@@ -287,12 +286,6 @@ void (async () => {
     absolutePersistPath,
     `${parsedOptions.data.output.filename}.${parsedOptions.data.extension}`,
   )
-  await page.setViewport({
-    // NOTE: `width` and `height` are arbitrary numbers here because the `page.screenshot` method takes a screenshot of the entire <pre> element regardless of the dimensions of the page.
-    width: 100,
-    height: 100,
-    deviceScaleFactor: parsedOptions.data.quality,
-  })
 
   await page.screenshot({
     path: codeshotPath,
@@ -303,7 +296,7 @@ void (async () => {
       y: 0,
       width: dimensions.width,
       height: dimensions.height,
-      scale: parsedOptions.data.quality,
+      scale: parsedOptions.data.scale,
     },
   })
 

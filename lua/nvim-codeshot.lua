@@ -50,8 +50,8 @@ local M = {
     theme = "catppuccin-mocha",
     -- Allows to configure screenshot extension. Currently supported extensions are `webp`, `jpeg` and `png`.
     extension = "png",
-    -- Allows to customize screenshot quality.
-    quality = 2,
+    -- Allows to customize screenshot scale.
+    scale = 3,
     -- Allows you to set the language alias. Available language aliases: https://shiki.style/languages
     languages = nil,
   },
