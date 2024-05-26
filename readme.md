@@ -21,6 +21,14 @@ require("lazy").setup({
 
 After installing the plugin, run `:CodeshotSetup` to install the necessary browser required for [puppeteer](https://pptr.dev/) to work.
 
+The last step is to configure a keyboard shortcut that invokes the command that takes a screenshot.
+
+```lua
+vim.keymap.set("v", "<leader>ua", function()
+  vim.cmd(":CodeshotScreenshot")
+end, { noremap = true, silent = true, nowait = true })
+```
+
 ## Configuration
 
 ```lua
