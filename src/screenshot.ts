@@ -9,6 +9,7 @@ import { execaSync } from 'execa'
 import util from 'node:util'
 import which from 'which'
 import { cwd } from 'node:process'
+import path from 'node:path'
 
 const indentTabs = (args: { code: string; tabWidth: number }): string => {
   const regex = new RegExp('^\t+', '')
@@ -79,7 +80,12 @@ const optionsSchema = z.object({
   }),
   extension: z.enum(['webp', 'jpeg', 'png']),
   scale: z.number().int(),
-  languages: z.record(z.string(), z.string()).default({}),
+  aliases: z
+    .object({
+      languages: z.record(z.string(), z.string()).default({}),
+      files: z.record(z.string(), z.string()).default({}),
+    })
+    .default({}),
 })
 
 type Options = z.infer<typeof optionsSchema>
@@ -115,6 +121,12 @@ const template = (args: {
 const CLIPBOARD_PROGRAM_COMMAND_TEMPLATES = {
   xclip: 'xclip -selection clipboard -t image/png -i %s',
 } as const
+
+// NOTE: This map adds support for files that do not have an extension (e.g. Makefile) but still must have language set.
+const BUILT_IN_FILE_MAPPINGS: Record<string, string> = {
+  Makefile: 'make',
+  Dockerfile: 'dockerfile',
+}
 
 void (async () => {
   const optionsFilePath = process.argv[2]
@@ -177,7 +189,7 @@ void (async () => {
   const highlighter = await getHighlighter({
     themes: [parsedOptions.data.theme],
     langs: Object.keys(bundledLanguages),
-    langAlias: parsedOptions.data.languages,
+    langAlias: parsedOptions.data.aliases.languages,
   })
 
   const commentSettings = highlighter.getTheme(parsedOptions.data.theme).settings.find((o) => {
@@ -198,9 +210,24 @@ void (async () => {
 
   const padEnd = codeToHighlight.split('\n').length.toString().length + 1
 
+  // NOTE: `@shiki/cli` library uses either language passed as CLI argument or file extension (https://github.com/shikijs/shiki/blob/main/packages/cli/src/cli.ts#L22).
+  const parsedPath = path.parse(parsedOptions.data.filepath)
+
+  let lang = parsedPath.ext
+  if (lang === '') {
+    const langFromBuiltInMappings = BUILT_IN_FILE_MAPPINGS[parsedPath.base]
+    if (langFromBuiltInMappings) {
+      lang = langFromBuiltInMappings
+    }
+
+    const langFromUserMappings = parsedOptions.data.aliases.files[parsedPath.base]
+    if (langFromUserMappings) {
+      lang = langFromUserMappings
+    }
+  }
+
   let htmlCode = highlighter.codeToHtml(codeToHighlight, {
-    // TODO: Figure out correct language mapping for current file.
-    lang: 'javascript',
+    lang,
     theme: parsedOptions.data.theme,
     transformers: [
       {

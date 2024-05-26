@@ -52,8 +52,12 @@ local M = {
     extension = "png",
     -- Allows to customize screenshot scale.
     scale = 3,
-    -- Allows to set language aliases so that, for example, files with extension `.ofa` are treated as files with extension `.js` when taking a screenshot. Available language aliases: https://shiki.style/languages
-    languages = nil,
+    aliases = {
+      -- Allows to set language aliases so that, for example, files with extension `.ofa` are treated as files with extension `.js` when taking a screenshot. Available language aliases: https://shiki.style/languages
+      languages = nil,
+      -- Allows to set file aliases so that, for example, files without extension (like Makefile) can be interpreted correctly when taking a screenshot. Available language aliases: https://shiki.style/languages
+      files = nil,
+    },
   },
 }
 
