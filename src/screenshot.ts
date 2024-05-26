@@ -176,8 +176,8 @@ void (async () => {
 
   const highlighter = await getHighlighter({
     themes: [parsedOptions.data.theme],
-    // TODO: Load only language that is required to render current file.
     langs: Object.keys(bundledLanguages),
+    langAlias: parsedOptions.data.languages,
   })
 
   const commentSettings = highlighter.getTheme(parsedOptions.data.theme).settings.find((o) => {
