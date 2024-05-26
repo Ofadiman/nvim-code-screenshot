@@ -78,6 +78,7 @@ const optionsSchema = z.object({
     message: `Unsupported theme. Please pass one of the following values: ${Object.keys(bundledThemes).join(', ')}.`,
   }),
   extension: z.enum(['webp', 'jpeg', 'png']),
+  // TODO: Check if this option makes any sense at all. Maybe setting `deviceScaleFactor` to 3 is simply enough for good quality screenshots.
   quality: z.number().int(),
   languages: z.record(z.string(), z.string()).default({}),
 })
