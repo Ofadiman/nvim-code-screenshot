@@ -97,23 +97,15 @@ vim.api.nvim_create_user_command("CodeshotScreenshot", function()
     return
   end
 
-  local start_pos = vim.fn.getpos("v")
-  local end_pos = vim.fn.getpos(".")
+  local start_line = vim.fn.getpos("v")[2]
+  local end_line = vim.fn.getpos(".")[2]
+  local lines = {}
 
-  local start_line, start_col = start_pos[2], start_pos[3]
-  local end_line, end_col = end_pos[2], end_pos[3]
-
-  local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
-
-  if vim.fn.visualmode() == "V" or vim.fn.visualmode() == "" then
-    lines[#lines] = vim.api.nvim_buf_get_lines(0, end_line - 1, end_line, false)[1]
+  local is_selecting_from_top_to_bottom = start_line < end_line
+  if is_selecting_from_top_to_bottom then
+    lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
   else
-    if #lines == 1 then
-      lines[1] = string.sub(lines[1], start_col, end_col)
-    else
-      lines[#lines] = string.sub(lines[#lines], 1, end_col)
-      lines[1] = string.sub(lines[1], start_col)
-    end
+    lines = vim.api.nvim_buf_get_lines(0, end_line - 1, start_line, false)
   end
 
   local code = table.concat(lines, "\n")
