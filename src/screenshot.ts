@@ -10,6 +10,7 @@ import util from 'node:util'
 import which from 'which'
 import { cwd } from 'node:process'
 import path from 'node:path'
+import os from 'node:os'
 
 const indentTabs = (args: { code: string; tabWidth: number }): string => {
   const regex = new RegExp('^\t+', '')
@@ -117,10 +118,6 @@ const template = (args: {
     ${args.watermark}
   </body>
 </html>`
-
-const CLIPBOARD_PROGRAM_COMMAND_TEMPLATES = {
-  xclip: 'xclip -selection clipboard -t image/png -i %s',
-} as const
 
 // NOTE: This map adds support for files that do not have an extension (e.g. Makefile) but still must have language set.
 const BUILT_IN_FILE_MAPPINGS: Record<string, string> = {
@@ -331,10 +328,23 @@ void (async () => {
 
   if (parsedOptions.data.clipboard.enable) {
     if (parsedOptions.data.clipboard.command === null) {
-      const xclip = which.sync('xclip', { nothrow: true })
-      if (xclip !== null) {
+      const isMac = os.platform() === 'darwin'
+      const isLinux = os.platform() === 'linux'
+      const hasXclip = which.sync('xclip', { nothrow: true }) !== null
+
+      if (isMac) {
+        execaSync(
+          'osascript',
+          ['-e', `set the clipboard to (read (POSIX file "${codeshotPath}") as JPEG picture)`],
+          {
+            stdio: 'ignore',
+          },
+        )
+      }
+
+      if (isLinux && hasXclip) {
         const formattedCommand = util.format(
-          CLIPBOARD_PROGRAM_COMMAND_TEMPLATES.xclip,
+          `xclip -selection clipboard -t image/png -i %s`,
           codeshotPath,
         )
 
@@ -349,9 +359,7 @@ void (async () => {
           stdio: 'ignore',
         })
       }
-    }
-
-    if (parsedOptions.data.clipboard.command !== null) {
+    } else {
       const formattedCommand = util.format(parsedOptions.data.clipboard.command, codeshotPath)
       const [binary, ...rest] = formattedCommand.split(' ')
 
