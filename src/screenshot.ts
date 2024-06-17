@@ -213,7 +213,7 @@ void (async () => {
   // NOTE: `@shiki/cli` library uses either language passed as CLI argument or file extension (https://github.com/shikijs/shiki/blob/main/packages/cli/src/cli.ts#L22).
   const parsedPath = path.parse(parsedOptions.data.filepath)
 
-  let lang = parsedPath.ext
+  let lang = parsedPath.ext.slice(1)
   if (lang === '') {
     const langFromBuiltInMappings = BUILT_IN_FILE_MAPPINGS[parsedPath.base]
     if (langFromBuiltInMappings) {
