@@ -53,6 +53,8 @@ local M = {
     -- Allows to customize screenshot scale.
     scale = 3,
     aliases = {
+      -- This field forces lua to format `aliases` table as JSON object when `languages` and `files` are `nil` because by default it gets formatted as array.
+      _as_object = "",
       -- Allows to set language aliases so that, for example, files with extension `.ofa` are treated as files with extension `.js` when taking a screenshot. Available language aliases: https://shiki.style/languages
       languages = nil,
       -- Allows to set file aliases so that, for example, files without extension (like Makefile) can be interpreted correctly when taking a screenshot. Available language aliases: https://shiki.style/languages
