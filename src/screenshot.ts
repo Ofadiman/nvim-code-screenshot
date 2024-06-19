@@ -271,7 +271,7 @@ void (async () => {
     ],
   })
 
-  const browser = await puppeteer.launch()
+  const browser = await puppeteer.launch({ product: 'chrome' })
   const page = await browser.newPage()
 
   if (parsedOptions.data.html.template === '') {
