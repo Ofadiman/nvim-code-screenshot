@@ -51951,76 +51951,96 @@ var z2 = /* @__PURE__ */ Object.freeze({
 });
 
 // src/setup.ts
+var LATEST_CHROME_VERSION_URL = "https://cdn.jsdelivr.net/gh/berstend/chrome-versions/data/stable/all/version/latest.json";
 var platformSchema = z2.enum(["darwin", "linux", "win32"]);
-var browserVersionSchema = z2.object({
+var latestChromeVersionPerSystemSchema = z2.object({
   version: z2.string(),
   milestone: z2.number(),
   date: z2.string()
 });
-var latestBrowsersSchema = z2.object({
-  windows: browserVersionSchema,
-  mac: browserVersionSchema,
-  linux: browserVersionSchema
+var latestChromeVersionResponseSchema = z2.object({
+  windows: latestChromeVersionPerSystemSchema,
+  mac: latestChromeVersionPerSystemSchema,
+  linux: latestChromeVersionPerSystemSchema
 });
 void (async () => {
   const defaultPuppeteerCacheDir = (0, import_node_path2.join)((0, import_node_os.homedir)(), ".cache", "puppeteer");
   const installedBrowsers = await getInstalledBrowsers({
     cacheDir: defaultPuppeteerCacheDir
   });
-  const hasZeroInstalledBrowsers = installedBrowsers.length === 0;
-  if (hasZeroInstalledBrowsers) {
-    consola.start(`Installing required browser.`);
-    const platform2 = platformSchema.parse(import_node_os2.default.platform());
-    const response = await fetch(
-      // https://github.com/berstend/chrome-versions#:~:text=Latest%20chrome%20stable%20version%20info%20for%20all%20platforms%3A
-      "https://cdn.jsdelivr.net/gh/berstend/chrome-versions/data/stable/all/version/latest.json"
-    );
-    if (!response.ok) {
-      consola.error(
-        "Could not fetch the latest browsers from https://cdn.jsdelivr.net/gh/berstend/chrome-versions/data/stable/all/version/latest.json."
-      );
-      return;
-    }
-    const json = await response.json();
-    const parsedLatestBrowsers = latestBrowsersSchema.safeParse(json);
-    if (!parsedLatestBrowsers.success) {
-      consola.error(
-        "Response from https://cdn.jsdelivr.net/gh/berstend/chrome-versions/data/stable/all/version/latest.json does not match expected data schema."
-      );
-      consola.error(parsedLatestBrowsers.error);
-      return;
-    }
-    let buildId = null;
-    if (platform2 === "linux") {
-      buildId = parsedLatestBrowsers.data.linux.version;
-    }
-    if (platform2 === "win32") {
-      buildId = parsedLatestBrowsers.data.windows.version;
-    }
-    if (platform2 === "darwin") {
-      buildId = parsedLatestBrowsers.data.mac.version;
-    }
-    if (buildId === null) {
-      consola.error(
-        `buildId for platform ${platform2} could not be retrieved. Available builds are:`
-      );
-      console.error(JSON.stringify(parsedLatestBrowsers.data, null, 2));
-      return;
-    }
-    const installedBrowser = await install({
+  const installedChromeBrowsers = installedBrowsers.filter(
+    (installedBrowser) => installedBrowser.browser === Browser.CHROME
+  );
+  const hasInstalledChromeBrowsers = installedChromeBrowsers.length > 0;
+  if (hasInstalledChromeBrowsers) {
+    consola.info(`Chrome browser is already installed.`);
+    return;
+  }
+  const parsedPlatform = platformSchema.safeParse(import_node_os2.default.platform());
+  if (!parsedPlatform.success) {
+    consola.error(`Platform ${import_node_os2.default.platform()} is not supported.`);
+    return;
+  }
+  const latestChromeVersionsResponse = await fetch(LATEST_CHROME_VERSION_URL);
+  if (!latestChromeVersionsResponse.ok) {
+    consola.error(`Could not fetch the latest browsers data from ${LATEST_CHROME_VERSION_URL}.`);
+    return;
+  }
+  let latestChromeVersionsJson = {};
+  try {
+    latestChromeVersionsJson = await latestChromeVersionsResponse.json();
+  } catch (e) {
+    consola.error(`Response from ${LATEST_CHROME_VERSION_URL} is not in JSON format.`);
+    consola.error(e);
+    return;
+  }
+  const parsedLatestBrowsers = latestChromeVersionResponseSchema.safeParse(latestChromeVersionsJson);
+  if (!parsedLatestBrowsers.success) {
+    consola.error(`Response from ${LATEST_CHROME_VERSION_URL} does not match expected schema.`);
+    consola.error(parsedLatestBrowsers.error);
+    return;
+  }
+  let buildId = null;
+  if (parsedPlatform.data === "linux") {
+    buildId = parsedLatestBrowsers.data.linux.version;
+  }
+  if (parsedPlatform.data === "win32") {
+    buildId = parsedLatestBrowsers.data.windows.version;
+  }
+  if (parsedPlatform.data === "darwin") {
+    buildId = parsedLatestBrowsers.data.mac.version;
+  }
+  if (buildId === null) {
+    consola.error(`buildId for ${parsedPlatform.data} platform could not be retrieved.`);
+    consola.error(JSON.stringify(parsedLatestBrowsers.data, null, 2));
+    return;
+  }
+  let timeout;
+  void function notify() {
+    timeout = setTimeout(() => {
+      const now = new Intl.DateTimeFormat(void 0, {
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric"
+      }).format(/* @__PURE__ */ new Date());
+      consola.info(`[${now}] Browser installation in progress`);
+      notify();
+    }, 1e3);
+  }();
+  try {
+    await install({
       cacheDir: defaultPuppeteerCacheDir,
       browser: Browser.CHROME,
       buildId,
       unpack: true
     });
-    consola.success(`The following browser has been installed:`);
-    consola.info(`- ${installedBrowser.browser}@${installedBrowser.buildId}`);
-    return;
+    consola.success(`Successfully installed ${Browser.CHROME}@${buildId}.`);
+  } catch (e) {
+    consola.error(`Failed to install ${Browser.CHROME}@${buildId}.`);
+    consola.error(e);
+  } finally {
+    clearTimeout(timeout);
   }
-  consola.info(`The following browsers are already installed:`);
-  installedBrowsers.forEach((installedBrowser) => {
-    consola.info(`- ${installedBrowser.browser}@${installedBrowser.buildId}`);
-  });
 })();
 /*! Bundled license information:
 

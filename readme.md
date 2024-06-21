@@ -15,13 +15,13 @@ Codeshot can be installed using any package manager. Here is an example of insta
 require("lazy").setup({
   {
     "Ofadiman/nvim-codeshot",
+    -- Install latest chrome browser required for puppeteer.
+    build = ":lua require('nvim-codeshot').install()"
   },
 })
 ```
 
-After installing the plugin, run `:CodeshotSetup` to install the necessary browser required for [puppeteer](https://pptr.dev/) to work.
-
-The last step is to configure a keyboard shortcut that invokes the command that takes a screenshot.
+After installation, you can configure a keyboard shortcut that invokes the screenshot command.
 
 ```lua
 vim.keymap.set("v", "<leader>ua", function()

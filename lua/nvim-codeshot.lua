@@ -82,19 +82,6 @@ local function sanitize_table_for_serialization(original_table)
   return sanitized_table
 end
 
-vim.api.nvim_create_user_command("CodeshotSetup", function()
-  local plugin_dir = debug.getinfo(1, "S").source:sub(2):match("(.*[/\\])")
-  local setup_script = plugin_dir .. "../bin/setup.cjs"
-
-  local handle = io.popen("node " .. setup_script)
-  if handle ~= nil then
-    local result = handle:read("*a")
-    handle:close()
-
-    print(result)
-  end
-end, {})
-
 vim.api.nvim_create_user_command("CodeshotScreenshot", function()
   if M.options.clipboard.enable == false and M.options.output.enable == false then
     if M.options.debug == true then
@@ -150,6 +137,26 @@ end, {})
 M.setup = function(options)
   local merged_options = vim.tbl_deep_extend("force", M.options, options)
   M.options = merged_options
+end
+
+M.install = function()
+  local plugin_dir = debug.getinfo(1, "S").source:sub(2):match("(.*[/\\])")
+  local script_path = plugin_dir .. "../bin/setup.cjs"
+
+  local handle_line = function(_, data)
+    local line = data[1]
+    if line ~= "" then
+      print(line)
+    end
+  end
+
+  vim.fn.jobstart({ "node", script_path }, {
+    on_stdout = handle_line,
+    on_stderr = handle_line,
+    env = {
+      NODE_OPTIONS = "--no-deprecation",
+    },
+  })
 end
 
 return M
