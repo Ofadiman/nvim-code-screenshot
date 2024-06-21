@@ -141,7 +141,7 @@ end
 
 M.install = function()
   local plugin_dir = debug.getinfo(1, "S").source:sub(2):match("(.*[/\\])")
-  local script_path = plugin_dir .. "../bin/setup.cjs"
+  local script_path = plugin_dir .. "../bin/install.cjs"
 
   local handle_line = function(_, data)
     local line = data[1]

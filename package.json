@@ -8,9 +8,9 @@
     "clean": "rm -rf $HOME/.cache/puppeteer > /dev/null 2>&1",
     "debug": "node --loader ts-node/esm --no-warnings",
     "format": "prettier -w .",
+    "install": "node bin/install.cjs",
     "screenshot": "node bin/screenshot.cjs",
     "types": "tsc --noEmit",
-    "setup": "node bin/setup.cjs",
     "watch": "nodemon"
   },
   "author": {
@@ -24,6 +24,7 @@
     "esbuild": "0.20.1",
     "nodemon": "^3.1.0",
     "prettier": "^3.2.5",
+    "rimraf": "^5.0.7",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.2"
   },

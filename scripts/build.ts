@@ -1,18 +1,21 @@
-import { build } from 'esbuild'
+import path from 'path'
+import { buildSync } from 'esbuild'
+import { consola } from 'consola'
+import { rimrafSync } from 'rimraf'
 
-build({
-  entryPoints: ['src/screenshot.ts', 'src/setup.ts'],
+const OUTDIR = 'bin'
+
+rimrafSync(path.join(OUTDIR, '**'), { glob: true })
+
+buildSync({
+  entryPoints: [path.join('src', '*')],
   bundle: true,
   outExtension: {
     '.js': '.cjs',
   },
-  outdir: 'bin',
+  outdir: OUTDIR,
   platform: 'node',
   format: 'cjs',
 })
-  .then(() => {
-    console.info(`build succeed`)
-  })
-  .catch((e) => {
-    console.error(`build failed`, e)
-  })
+
+consola.info(`build succeed`)

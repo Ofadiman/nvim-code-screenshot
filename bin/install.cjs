@@ -45771,7 +45771,7 @@ var init_consola_36c0034f = __esm({
   }
 });
 
-// src/setup.ts
+// src/install.ts
 var import_node_os = require("node:os");
 var import_node_path2 = require("node:path");
 
@@ -48214,7 +48214,7 @@ init_core();
 init_consola_06ad8a64();
 init_utils();
 
-// src/setup.ts
+// src/install.ts
 var import_node_os2 = __toESM(require("node:os"), 1);
 
 // node_modules/zod/lib/index.mjs
@@ -51950,7 +51950,7 @@ var z2 = /* @__PURE__ */ Object.freeze({
   ZodError
 });
 
-// src/setup.ts
+// src/install.ts
 var LATEST_CHROME_VERSION_URL = "https://cdn.jsdelivr.net/gh/berstend/chrome-versions/data/stable/all/version/latest.json";
 var platformSchema = z2.enum(["darwin", "linux", "win32"]);
 var latestChromeVersionPerSystemSchema = z2.object({
