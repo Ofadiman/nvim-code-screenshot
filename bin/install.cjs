@@ -45771,6 +45771,261 @@ var init_consola_36c0034f = __esm({
   }
 });
 
+// node_modules/isexe/dist/cjs/posix.js
+var require_posix = __commonJS({
+  "node_modules/isexe/dist/cjs/posix.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.sync = exports2.isexe = void 0;
+    var fs_1 = require("fs");
+    var promises_1 = require("fs/promises");
+    var isexe = async (path9, options = {}) => {
+      const { ignoreErrors = false } = options;
+      try {
+        return checkStat(await (0, promises_1.stat)(path9), options);
+      } catch (e) {
+        const er = e;
+        if (ignoreErrors || er.code === "EACCES")
+          return false;
+        throw er;
+      }
+    };
+    exports2.isexe = isexe;
+    var sync = (path9, options = {}) => {
+      const { ignoreErrors = false } = options;
+      try {
+        return checkStat((0, fs_1.statSync)(path9), options);
+      } catch (e) {
+        const er = e;
+        if (ignoreErrors || er.code === "EACCES")
+          return false;
+        throw er;
+      }
+    };
+    exports2.sync = sync;
+    var checkStat = (stat, options) => stat.isFile() && checkMode(stat, options);
+    var checkMode = (stat, options) => {
+      const myUid = options.uid ?? process.getuid?.();
+      const myGroups = options.groups ?? process.getgroups?.() ?? [];
+      const myGid = options.gid ?? process.getgid?.() ?? myGroups[0];
+      if (myUid === void 0 || myGid === void 0) {
+        throw new Error("cannot get uid or gid");
+      }
+      const groups = /* @__PURE__ */ new Set([myGid, ...myGroups]);
+      const mod = stat.mode;
+      const uid = stat.uid;
+      const gid = stat.gid;
+      const u = parseInt("100", 8);
+      const g2 = parseInt("010", 8);
+      const o = parseInt("001", 8);
+      const ug = u | g2;
+      return !!(mod & o || mod & g2 && groups.has(gid) || mod & u && uid === myUid || mod & ug && myUid === 0);
+    };
+  }
+});
+
+// node_modules/isexe/dist/cjs/win32.js
+var require_win32 = __commonJS({
+  "node_modules/isexe/dist/cjs/win32.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.sync = exports2.isexe = void 0;
+    var fs_1 = require("fs");
+    var promises_1 = require("fs/promises");
+    var isexe = async (path9, options = {}) => {
+      const { ignoreErrors = false } = options;
+      try {
+        return checkStat(await (0, promises_1.stat)(path9), path9, options);
+      } catch (e) {
+        const er = e;
+        if (ignoreErrors || er.code === "EACCES")
+          return false;
+        throw er;
+      }
+    };
+    exports2.isexe = isexe;
+    var sync = (path9, options = {}) => {
+      const { ignoreErrors = false } = options;
+      try {
+        return checkStat((0, fs_1.statSync)(path9), path9, options);
+      } catch (e) {
+        const er = e;
+        if (ignoreErrors || er.code === "EACCES")
+          return false;
+        throw er;
+      }
+    };
+    exports2.sync = sync;
+    var checkPathExt = (path9, options) => {
+      const { pathExt = process.env.PATHEXT || "" } = options;
+      const peSplit = pathExt.split(";");
+      if (peSplit.indexOf("") !== -1) {
+        return true;
+      }
+      for (let i = 0; i < peSplit.length; i++) {
+        const p2 = peSplit[i].toLowerCase();
+        const ext = path9.substring(path9.length - p2.length).toLowerCase();
+        if (p2 && ext === p2) {
+          return true;
+        }
+      }
+      return false;
+    };
+    var checkStat = (stat, path9, options) => stat.isFile() && checkPathExt(path9, options);
+  }
+});
+
+// node_modules/isexe/dist/cjs/options.js
+var require_options = __commonJS({
+  "node_modules/isexe/dist/cjs/options.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+  }
+});
+
+// node_modules/isexe/dist/cjs/index.js
+var require_cjs = __commonJS({
+  "node_modules/isexe/dist/cjs/index.js"(exports2) {
+    "use strict";
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? function(o, m2, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m2, k);
+      if (!desc || ("get" in desc ? !m2.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m2[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
+    } : function(o, m2, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      o[k2] = m2[k];
+    });
+    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v2) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v2 });
+    } : function(o, v2) {
+      o["default"] = v2;
+    });
+    var __importStar2 = exports2 && exports2.__importStar || function(mod) {
+      if (mod && mod.__esModule)
+        return mod;
+      var result = {};
+      if (mod != null) {
+        for (var k in mod)
+          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
+            __createBinding2(result, mod, k);
+      }
+      __setModuleDefault2(result, mod);
+      return result;
+    };
+    var __exportStar2 = exports2 && exports2.__exportStar || function(m2, exports3) {
+      for (var p2 in m2)
+        if (p2 !== "default" && !Object.prototype.hasOwnProperty.call(exports3, p2))
+          __createBinding2(exports3, m2, p2);
+    };
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.sync = exports2.isexe = exports2.posix = exports2.win32 = void 0;
+    var posix = __importStar2(require_posix());
+    exports2.posix = posix;
+    var win32 = __importStar2(require_win32());
+    exports2.win32 = win32;
+    __exportStar2(require_options(), exports2);
+    var platform2 = process.env._ISEXE_TEST_PLATFORM_ || process.platform;
+    var impl = platform2 === "win32" ? win32 : posix;
+    exports2.isexe = impl.isexe;
+    exports2.sync = impl.sync;
+  }
+});
+
+// node_modules/which/lib/index.js
+var require_lib2 = __commonJS({
+  "node_modules/which/lib/index.js"(exports2, module2) {
+    var { isexe, sync: isexeSync } = require_cjs();
+    var { join: join3, delimiter, sep: sep2, posix } = require("path");
+    var isWindows2 = process.platform === "win32";
+    var rSlash = new RegExp(`[${posix.sep}${sep2 === posix.sep ? "" : sep2}]`.replace(/(\\)/g, "\\$1"));
+    var rRel = new RegExp(`^\\.${rSlash.source}`);
+    var getNotFoundError = (cmd) => Object.assign(new Error(`not found: ${cmd}`), { code: "ENOENT" });
+    var getPathInfo = (cmd, {
+      path: optPath = process.env.PATH,
+      pathExt: optPathExt = process.env.PATHEXT,
+      delimiter: optDelimiter = delimiter
+    }) => {
+      const pathEnv = cmd.match(rSlash) ? [""] : [
+        // windows always checks the cwd first
+        ...isWindows2 ? [process.cwd()] : [],
+        ...(optPath || /* istanbul ignore next: very unusual */
+        "").split(optDelimiter)
+      ];
+      if (isWindows2) {
+        const pathExtExe = optPathExt || [".EXE", ".CMD", ".BAT", ".COM"].join(optDelimiter);
+        const pathExt = pathExtExe.split(optDelimiter).flatMap((item) => [item, item.toLowerCase()]);
+        if (cmd.includes(".") && pathExt[0] !== "") {
+          pathExt.unshift("");
+        }
+        return { pathEnv, pathExt, pathExtExe };
+      }
+      return { pathEnv, pathExt: [""] };
+    };
+    var getPathPart = (raw, cmd) => {
+      const pathPart = /^".*"$/.test(raw) ? raw.slice(1, -1) : raw;
+      const prefix = !pathPart && rRel.test(cmd) ? cmd.slice(0, 2) : "";
+      return prefix + join3(pathPart, cmd);
+    };
+    var which2 = async (cmd, opt = {}) => {
+      const { pathEnv, pathExt, pathExtExe } = getPathInfo(cmd, opt);
+      const found = [];
+      for (const envPart of pathEnv) {
+        const p2 = getPathPart(envPart, cmd);
+        for (const ext of pathExt) {
+          const withExt = p2 + ext;
+          const is = await isexe(withExt, { pathExt: pathExtExe, ignoreErrors: true });
+          if (is) {
+            if (!opt.all) {
+              return withExt;
+            }
+            found.push(withExt);
+          }
+        }
+      }
+      if (opt.all && found.length) {
+        return found;
+      }
+      if (opt.nothrow) {
+        return null;
+      }
+      throw getNotFoundError(cmd);
+    };
+    var whichSync = (cmd, opt = {}) => {
+      const { pathEnv, pathExt, pathExtExe } = getPathInfo(cmd, opt);
+      const found = [];
+      for (const pathEnvPart of pathEnv) {
+        const p2 = getPathPart(pathEnvPart, cmd);
+        for (const ext of pathExt) {
+          const withExt = p2 + ext;
+          const is = isexeSync(withExt, { pathExt: pathExtExe, ignoreErrors: true });
+          if (is) {
+            if (!opt.all) {
+              return withExt;
+            }
+            found.push(withExt);
+          }
+        }
+      }
+      if (opt.all && found.length) {
+        return found;
+      }
+      if (opt.nothrow) {
+        return null;
+      }
+      throw getNotFoundError(cmd);
+    };
+    module2.exports = which2;
+    which2.sync = whichSync;
+  }
+});
+
 // src/install.ts
 var import_node_os = require("node:os");
 var import_node_path2 = require("node:path");
@@ -51951,6 +52206,7 @@ var z2 = /* @__PURE__ */ Object.freeze({
 });
 
 // src/install.ts
+var import_which = __toESM(require_lib2(), 1);
 var LATEST_CHROME_VERSION_URL = "https://cdn.jsdelivr.net/gh/berstend/chrome-versions/data/stable/all/version/latest.json";
 var platformSchema = z2.enum(["darwin", "linux", "win32"]);
 var latestChromeVersionPerSystemSchema = z2.object({
@@ -51964,6 +52220,11 @@ var latestChromeVersionResponseSchema = z2.object({
   linux: latestChromeVersionPerSystemSchema
 });
 void (async () => {
+  const googleChromePath = import_which.default.sync("google-chrome", { nothrow: true, all: false });
+  if (googleChromePath !== null) {
+    consola.info("Chrome browser is already installed.");
+    return;
+  }
   const defaultPuppeteerCacheDir = (0, import_node_path2.join)((0, import_node_os.homedir)(), ".cache", "puppeteer");
   const installedBrowsers = await getInstalledBrowsers({
     cacheDir: defaultPuppeteerCacheDir

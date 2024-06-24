@@ -4,6 +4,7 @@ import { Browser, getInstalledBrowsers, install } from '@puppeteer/browsers'
 import { consola } from 'consola'
 import os from 'node:os'
 import { z } from 'zod'
+import which from 'which'
 
 // https://github.com/berstend/chrome-versions#:~:text=Latest%20chrome%20stable%20version%20info%20for%20all%20platforms%3A
 const LATEST_CHROME_VERSION_URL: string =
@@ -24,6 +25,12 @@ const latestChromeVersionResponseSchema = z.object({
 })
 
 void (async (): Promise<void> => {
+  const googleChromePath = which.sync('google-chrome', { nothrow: true, all: false })
+  if (googleChromePath !== null) {
+    consola.info('Chrome browser is already installed.')
+    return
+  }
+
   const defaultPuppeteerCacheDir = join(homedir(), '.cache', 'puppeteer')
   const installedBrowsers = await getInstalledBrowsers({
     cacheDir: defaultPuppeteerCacheDir,
