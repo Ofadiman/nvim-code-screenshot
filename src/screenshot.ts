@@ -2,7 +2,7 @@ import consola from 'consola'
 import { readFileSync, existsSync, mkdirSync, statSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join, resolve } from 'node:path'
-import puppeteer from 'puppeteer'
+import puppeteer, { PuppeteerLaunchOptions } from 'puppeteer'
 import { bundledLanguages, bundledThemes, getHighlighter } from 'shiki'
 import { z } from 'zod'
 import { execaSync } from 'execa'
@@ -271,7 +271,15 @@ void (async () => {
     ],
   })
 
-  const browser = await puppeteer.launch({ channel: 'chrome' })
+  const puppeteerLaunchOptions: PuppeteerLaunchOptions = {}
+  const googleChromePath = which.sync('google-chrome', { nothrow: true, all: false })
+  const hasGoogleChrome = googleChromePath !== null
+  if (hasGoogleChrome) {
+    puppeteerLaunchOptions.executablePath = googleChromePath
+  } else {
+    puppeteerLaunchOptions.channel = 'chrome'
+  }
+  const browser = await puppeteer.launch(puppeteerLaunchOptions)
   const page = await browser.newPage()
 
   if (parsedOptions.data.html.template === '') {
