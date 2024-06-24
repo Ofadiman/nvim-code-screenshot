@@ -84,9 +84,7 @@ end
 
 vim.api.nvim_create_user_command("CodeshotScreenshot", function()
   if M.options.clipboard.enable == false and M.options.output.enable == false then
-    if M.options.debug == true then
-      print("Both \"clipboard.enable\" and \"output.enable\" options are set to \"false\", so this command does nothing right now.")
-    end
+    print("Both \"clipboard.enable\" and \"output.enable\" options are set to \"false\", so this command does nothing right now.")
     return
   end
 

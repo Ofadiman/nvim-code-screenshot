@@ -33,8 +33,6 @@ end, { noremap = true, silent = true, nowait = true })
 
 ```lua
 require("nvim-codeshot").setup({
-  -- Setting this option to `true` will cause the program to emit additional logs when taking screenshots. The option comes in handy when debugging problems with the plugin.
-  debug = false,
   -- Setting this option to `true` will cause the screenshot to contain the path to the file where the screenshot was taken.
   breadcrumbs = true,
   padding = {
