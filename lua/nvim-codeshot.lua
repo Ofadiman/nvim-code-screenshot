@@ -35,7 +35,7 @@ local M = {
       --   return filename .. "_" .. os.date("%Y_%m_%d_%H:%M:%S")
       -- end,
       formatter = function(filename)
-        return filename
+        return os.date("%Y%m%d%H%M%S") .. "_" .. filename
       end,
     },
     clipboard = {
