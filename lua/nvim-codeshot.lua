@@ -133,7 +133,7 @@ vim.api.nvim_create_user_command("CodeshotScreenshot", function()
 end, {})
 
 M.setup = function(options)
-  local merged_options = vim.tbl_deep_extend("force", M.options, options)
+  local merged_options = vim.tbl_deep_extend("force", M.options, options or {})
   M.options = merged_options
 end
 
